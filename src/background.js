@@ -5,6 +5,13 @@ import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 const isDevelopment = process.env.NODE_ENV !== "production";
 
+
+import store from "./store";
+import { loadConfiguration, initSources } from './main/init.js'
+const configuration = loadConfiguration()
+
+initSources(configuration, store)
+
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } }
@@ -55,10 +62,7 @@ app.on("ready", async () => {
   if (isDevelopment && !process.env.IS_TEST) {
     // Install Vue Devtools
     try {
-      await installExtension({
-        id: 'ljjemllljcmogpfapbkkighbhhppjdbg',
-        electron: '>=1.2.1'
-      });
+      await installExtension(VUEJS_DEVTOOLS);
     } catch (e) {
       console.error("Vue Devtools failed to install:", e.toString());
     }

@@ -1,0 +1,5 @@
+export const RESET_STATE = 'RESET_STATE'
+export const LOAD_ITEMS = 'LOAD_ITEMS'
+export const SAVE_ITEM = 'SAVE_ITEM'
+export const UPDATE_ITEM = 'UPDATE_ITEM'
+export const DELETE_ITEM = 'DELETE_ITEM'

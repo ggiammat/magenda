@@ -1,8 +1,25 @@
 import { createStore } from "vuex";
+import actions from './actions'
+import mutations from './mutations'
+import { createSharedMutations } from 'vuex-electron'
+
+
+
+
+const getters = {
+  items: state => state.items
+}
+
+console.log(actions)
 
 export default createStore({
-  state: {},
-  mutations: {},
-  actions: {},
-  modules: {}
+  strict: true,
+  state: {
+    items: []
+  },
+  mutations,
+  actions,
+  getters,
+  modules: {},
+  plugins: [createSharedMutations()]
 });
