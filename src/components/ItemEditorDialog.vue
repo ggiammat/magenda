@@ -37,7 +37,6 @@
 <script>
 
 import { MItem } from '@/common/model/mitem'
-import { v4 as uuidv4 } from 'uuid'
 import MarkdownEditor from '@/components/MarkdownEditor.vue'
 import storeMixin from '@/components/mixins/store'
 
@@ -50,6 +49,7 @@ export default {
   },
   data: () => ({
     item: new MItem(),
+    updatedProps: null,
     dialogVisible: false,
     resolve: null,
     projects: ['PLG', 'CYB', 'EYC'],
@@ -81,7 +81,7 @@ export default {
           this.item = new MItem(itemId)
         }
       } else {
-        this.item = new MItem({week: 51})
+        this.item = new MItem({week: 53})
       }
       this.dialogVisible = true
       if(this.item.start){
@@ -89,6 +89,16 @@ export default {
       } else {
         this.startDate = undefined
       }
+
+      // FIXME: body appear to be alwasy modified even if it is not (it probably depends on muya that sets the body when it is initialized)
+      this.updatedProps = new Set()
+      this.item = new Proxy(this.item, {
+          set: (obj, prop, value) => {
+            this.updatedProps.add(prop.toString())
+            obj[prop] = value
+            return true
+          }
+      })
 
       console.log('show dialog', this.item)
       //return new Promise(resolve => {
@@ -104,11 +114,12 @@ export default {
       console.log('parent', this.item.parent)
 
       if(this.item.id){
-        // TODO: update only updated fields
-        let updates = this.item.getSerializedProps()
+        let updates = {}
+        this.updatedProps.forEach(p => updates[p] = this.item[p])
+        console.log('updated props', updates)
         this.updateItem(this.item.id, updates)
       } else {
-        this.item.id = uuidv4()
+        //this.item.id = uuidv4()
         this.saveItem(this.item)
       }
       //this.resolve({ action: 'save', item: this.item })

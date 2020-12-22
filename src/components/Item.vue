@@ -1,6 +1,7 @@
 <template>
   <div class="item-div" :class="{ 'line-through': item.done }" @click="clicked()">
-    <span v-if="!item.id">(V)</span>
+    <span v-if="item._base">(B) </span>
+    <span v-if="item.baseId && !item._base">$$B</span>
     <span v-if="item.hasDuplicate">(D)</span>
     <span>{{time}} </span>
     <span>{{item.title}}</span>
@@ -36,12 +37,23 @@ export default {
       }
     },
     subItems() {
+
+      return this.items.filter(i => {
+        if (i.rels) {
+            let res = i.rels.find(r => r.role === 'child' && r.other === this.item.id)
+            return res || false
+        }
+        return false
+      })
+
+      /*
       if(this.item.subItems){
         // find subtiems with id first
         let sub = this.item.subItems.filter(si => typeof si === 'string').map(si => this.items.find(ii => ii.id == si)).filter(i => i)
         let subTitles = sub.map(s => s.title)
         let subNoId = this.item.subItems.filter(si => typeof si === 'object' && !subTitles.includes(si.title)).map(si => new MItem({...si, parent: this.item.id}))
         return [...sub, ...subNoId]
+        */
         /*
       return this.item.subItems.map(si => {
         if (typeof si === 'object'){
@@ -53,9 +65,7 @@ export default {
         return {title: 'undefined subitem'}
       }).filter(si => si)
       */
-    } else {
-      return []
-    }
+
     }
   }
 }

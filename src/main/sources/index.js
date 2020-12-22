@@ -11,8 +11,4 @@ export class ItemSource {
     this.sourceManager = sourceManager
     log.info(`📁 Initialized ItemSource "${name}"`)
   }
-
-  load(query) {
-    this.sourceManager.notifyUpdatedItems(this, this._innerLoad(query))
-  }
 }

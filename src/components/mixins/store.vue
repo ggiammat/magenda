@@ -1,6 +1,7 @@
 <script>
 import { mapGetters } from 'vuex'
-import { serializeObject } from '@/common/model/mitem'
+import { ipcRenderer } from 'electron'
+
 export default {
   computed: {
     ...mapGetters(['items']),
@@ -8,12 +9,24 @@ export default {
   methods: {
     updateItem(itemId, updates){
 
-        console.log('updates', updates)
+        ipcRenderer.send('mag:source:save-item', itemId, updates)
 
-        this.$store.dispatch('updateItem', {itemId, updates})
-        this.$message({message: 'Item Updated', type: 'success'})
+        //console.log('updates', updates)
+
+        //this.$store.dispatch('updateItem', {itemId, updates})
+        //this.$message({message: 'Item Updated', type: 'success'})
     },
     saveItem(item) {
+
+      ipcRenderer.send('mag:source:save-item', item.serialize())
+
+      /*
+      if(item.parent) {
+        item.baseId = item.parent
+        let parentItem = this.$store.state.items.find(i => i.id === item.parent)
+        item._base = parentItem
+      }
+      console.log('dispatching serialized item', item.serialize())
       this.$store.dispatch('saveItem', item.serialize())
       this.$message({message: 'Item Saved', type: 'success'})
       if(item.parent) {
@@ -26,8 +39,14 @@ export default {
         console.log('new subitems', subitems)
         this.updateItem(parentItem.id, {subItems: subitems})
       }
+      */
     },
     deleteItem(itemId) {
+
+      ipcRenderer.send('mag:source:delete-item', itemId)
+
+
+      /*
       let item = this.$store.state.items.find(i => i.id === itemId)
       this.$store.dispatch('deleteItem', itemId)
       this.$message({message: 'Item Deleted', type: 'success'})
@@ -39,6 +58,8 @@ export default {
         console.log('new subitems', subitems)
         this.updateItem(parentItem.id, {subItems: subitems})
       }
+
+      */
     }
   }
 }

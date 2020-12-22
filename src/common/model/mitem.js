@@ -1,5 +1,8 @@
-import { getSubItems } from './markdown'
+import { getSubItems, extractBodyProps } from './markdown'
+var _ = require('lodash')
+
 const MERGING_PROPS = ['subItems', 'tags']
+const NOT_BASE_PROPS = ['type']
 const mItemProxyGetter = function(obj, prop) {
   //console.log('MItem Proxy Get', prop)
 
@@ -28,6 +31,12 @@ const mItemProxyGetter = function(obj, prop) {
     return obj._bodyprops[prop]
   }
 
+  if(obj._base){
+    if(!NOT_BASE_PROPS.includes(prop) && prop in obj._base) {
+      return obj._base[prop]
+    }
+  }
+
   return undefined
 }
 
@@ -35,6 +44,7 @@ const mItemProxySetter = function(obj, prop, value) {
   if (prop === 'body'){
     obj._props[prop] = value
     obj._bodyprops['subItems'] = getSubItems(value)
+    extractBodyProps(value)
     return true
   }
 
@@ -51,6 +61,11 @@ const mItemProxySetter = function(obj, prop, value) {
     }
   }
 
+  if (prop === '_base') {
+    obj._base = value
+    return true
+  }
+
   obj._props[prop] = value
   return true
 }
@@ -59,9 +74,12 @@ const mItemProxySetter = function(obj, prop, value) {
 const proxyHandler = {
   get: mItemProxyGetter,
   set: mItemProxySetter,
+  has(obj, prop) {
+    return this.ownKeys(obj).includes(prop)
+  },
   ownKeys: function(obj) {
     //console.log('Proxy OWN KEYS')
-    return [... new Set([...Object.keys(obj._props), ...Object.keys(obj._bodyprops)])]
+    return [... new Set(['_base', ...Object.keys(obj._props), ...Object.keys(obj._bodyprops), ...Object.keys(obj._base || {})])]
   },
   getOwnPropertyDescriptor: function (obj, prop) {
     //console.log('PROXY PROPDESCR')
@@ -94,26 +112,19 @@ export class MItem {
 
   _bodyprops = {}
 
-  constructor(props = {}) {
+  _base = undefined
+
+  constructor(props = {}, base = undefined) {
     this._props = props
+    this._base = base
     const proxy = new Proxy(this, proxyHandler)
     if ('body' in props) {
       proxy.body = props.body
     }
     return proxy
   }
-
-  /*
-  static buildFromDict(props) {
-    let obj = new MItem()
-    //obj.setBodyProps(bodyProps)
-    Object.entries(props).forEach(e => obj[e[0]] = e[1])
-    return obj
-  }
-  */
-
   static deserialize(item) {
-    return new MItem(item._props, item._bodyprops)
+    return new MItem(item._props, item._base ? MItem.deserialize(item._base) : undefined)
   }
 
   getSerializedProps(){
@@ -122,8 +133,9 @@ export class MItem {
 
   serialize() {
     return {
-      _props: serializeObject(this._props),
-      _bodyprops: serializeObject(this._bodyprops)
+      _props: _.cloneDeep(this._props),
+      _bodyprops: _.cloneDeep(this._bodyprops),
+      _base: this._base ? this._base.serialize() : undefined
     }
   }
 }

@@ -54,7 +54,7 @@ export default {
           })
           return res
         })
-        .map(t => t)
+        .filter(i => i.rels ? !i.rels.find(r => r.role === 'child') : true)
     },
     highlighted() {
         if ('week' in this.itemFilters) {

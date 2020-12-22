@@ -15,7 +15,10 @@ console.log(actions)
 export default createStore({
   strict: true,
   state: {
-    items: []
+    items: [],
+    _itemRelsCache: {
+      base: {}
+    }
   },
   mutations,
   actions,
