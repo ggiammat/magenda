@@ -1,6 +1,6 @@
 <template>
-  <el-button @click="week--">&lt;</el-button>
-  <el-button @click="week++">&gt;</el-button>
+  <el-button @click="prevWeek()">&lt;</el-button>
+  <el-button @click="nextWeek()">&gt;</el-button>
   <el-row :gutter="20">
   <el-col :span="6">
     <div class="grid-content bg-purple">{{formatDay(dates.mon)}}</div>
@@ -27,7 +27,7 @@
 <script>
 //import draggable from 'vuedraggable'
 import ItemList from '@/components/ItemList'
-import { parse, getWeek, getYear, addDays, format } from 'date-fns'
+import { addWeeks, subWeeks, startOfWeek, addDays, format } from 'date-fns'
 
 export default {
   components: {
@@ -36,26 +36,34 @@ export default {
   },
   data(){
     return {
-      week: getWeek(new Date(), {weekStartsOn: 1}),
-      year: getYear(new Date())
+      startDate: startOfWeek(new Date(), {weekStartsOn: 1})
+      //week: getWeek(new Date(), {weekStartsOn: 1}),
+      //year: getYear(new Date())
     }
   },
   computed: {
     dates() {
-      const startOfWeek =  parse(this.week + " " + this.year, "I R", new Date(), {weekStartsOn: 1})
-      console.log('week', startOfWeek)
+      //const startOfWeek =  parse(this.week + " " + this.year, "I R", new Date(), {weekStartsOn: 1})
+      console.log('week', this.startDate)
       return {
-        mon: startOfWeek,
-        tue: addDays(startOfWeek, 1),
-        wed: addDays(startOfWeek, 2),
-        thr: addDays(startOfWeek, 3),
-        fri: addDays(startOfWeek, 4),
-        sat: addDays(startOfWeek, 5),
-        sun: addDays(startOfWeek, 6),
+        mon: this.startDate,
+        tue: addDays(this.startDate, 1),
+        wed: addDays(this.startDate, 2),
+        thr: addDays(this.startDate, 3),
+        fri: addDays(this.startDate, 4),
+        sat: addDays(this.startDate, 5),
+        sun: addDays(this.startDate, 6),
       }
     }
  },
   methods: {
+    prevWeek(){
+      this.startDate = addWeeks(this.startDate, 1)
+    },
+    nextWeek(){
+      this.startDate = subWeeks(this.startDate, 1)
+
+    },
     formatDay(date){
       console.log('formatting', date)
       return format(date, 'EEEE do')
