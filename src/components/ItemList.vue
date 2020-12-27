@@ -54,7 +54,6 @@ export default {
           })
           return res
         })
-        //.filter(i => i.rels ? !i.rels.find(r => r.role === 'child') : true)
     },
     highlighted() {
         if ('week' in this.itemFilters) {
@@ -70,17 +69,6 @@ export default {
   methods: {
     showDialog(item) {
       this.$refs.dialog.show(item.id)
-      /*.then(result => {
-              console.log('DIALOG RESULT', result.item)
-              let action = result.action
-              if (action === 'save') {
-                console.log('SAVING ITEM', this.taskEditorData)
-                this.saveTask()
-              } else if (action === 'remove') {
-                this.removeTask()
-              }
-            })
-        */
     },
     log(event) {
       if(event.added){
