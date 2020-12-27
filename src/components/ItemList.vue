@@ -44,9 +44,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['items']),
+    ...mapGetters(['topLevelItems']),
     visibleItems() {
-      return this.items
+      return this.topLevelItems
         .filter(t => {
           let res = true
           Object.keys(this.itemFilters).forEach(k => {
@@ -54,7 +54,7 @@ export default {
           })
           return res
         })
-        .filter(i => i.rels ? !i.rels.find(r => r.role === 'child') : true)
+        //.filter(i => i.rels ? !i.rels.find(r => r.role === 'child') : true)
     },
     highlighted() {
         if ('week' in this.itemFilters) {

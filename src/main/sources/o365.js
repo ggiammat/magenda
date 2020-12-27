@@ -22,7 +22,11 @@ export class O365ItemSource extends MarkdownItemSource {
 
     if (item.type === 'virtual-event') {
       let newItem = new MItem()
-      newItem.baseId = item.id
+      newItem.rels = [{
+        name: 'encapsulation',
+        other: item.id,
+        role: 'encapsulator'
+      }]
       this.saveItem(newItem, updates)
       return
     }

@@ -1,16 +1,13 @@
-import { getSubItems, extractBodyProps } from './markdown'
+import { extractBodyProps } from './markdown'
+//import { v4 as uuidv4 } from 'uuid'
 var _ = require('lodash')
 
 const MERGING_PROPS = ['subItems', 'tags']
-const NOT_BASE_PROPS = ['type']
+const NOT_INHERITABLE_PROPS = ['type', 'id', 'hidden', '_extends', '_encapsulated', 'encapsuler']
+const EXTENDS_NOT_INHERITABLE_PROPS = ['type', 'id', 'hidden', '_extends', '_encapsulated', 'childs', 'encapsuler']
+//const NOT_INHERITABLE_RELS = ['extends', 'encapsulation','parent']
+//const EXTENDS_NOT_INHERITABLE_RELS = ['extends', 'encapsulation', 'parent']
 const mItemProxyGetter = function(obj, prop) {
-  //console.log('MItem Proxy Get', prop)
-
-  // needed to call instance methods (e.g. "serialize()") and
-  // for getting raw _props and _bodyprops
-  if (prop in obj) {
-    return obj[prop]
-  }
 
   if (MERGING_PROPS.includes(prop)) {
     var bodyRes
@@ -23,28 +20,40 @@ const mItemProxyGetter = function(obj, prop) {
     return res
   }
 
-  if(prop in obj._props) {
-    return obj._props[prop]
-  }
-
-  if (prop in obj._bodyprops) {
-    return obj._bodyprops[prop]
-  }
-
-  if(obj._base){
-    if(!NOT_BASE_PROPS.includes(prop) && prop in obj._base) {
-      return obj._base[prop]
+  /*
+  if (prop === 'rels') {
+    let res = [...obj._props[prop] || []]
+    if (obj._encapsulated) {
+      let res2 = obj._encapsulated.rels.filter(r => !NOT_INHERITABLE_RELS.includes(r.name))
+      console.log('encapsulated rels', res2)
+      res = res.concat(res2)
     }
+    if (obj._extends) {
+      res = res.concat(obj._extends.rels.filter(r => !EXTENDS_NOT_INHERITABLE_RELS.includes(r.name)))
+    }
+    return res
   }
+  */
 
-  return undefined
+  return (
+    obj[prop] ||
+    obj._props[prop] ||
+    obj._bodyprops[prop] ||
+    (obj._encapsulated && !NOT_INHERITABLE_PROPS.includes(prop)
+      ? obj._encapsulated[prop]
+      : undefined) ||
+    (obj._extends && !EXTENDS_NOT_INHERITABLE_PROPS.includes(prop)
+      ? obj._extends[prop]
+      : undefined) ||
+    undefined
+  )
 }
 
 const mItemProxySetter = function(obj, prop, value) {
   if (prop === 'body'){
     obj._props[prop] = value
-    obj._bodyprops['subItems'] = getSubItems(value)
-    extractBodyProps(value)
+    //obj._bodyprops['subItems'] = getSubItems(value)
+    obj._bodyprops = extractBodyProps(value)
     return true
   }
 
@@ -61,26 +70,28 @@ const mItemProxySetter = function(obj, prop, value) {
     }
   }
 
-  if (prop === '_base') {
-    obj._base = value
-    return true
+  if (prop.startsWith("_")) {
+    obj[prop] = value
   }
 
   obj._props[prop] = value
   return true
 }
 
+//const ITEM_PROPS = ['title', 'week', 'subItems', 'rels']
 
 const proxyHandler = {
   get: mItemProxyGetter,
   set: mItemProxySetter,
+
+  // REACTIVITY SEEMS TO WORK ALSO WITHOUT THESE TWO TRAPS
   has(obj, prop) {
     return this.ownKeys(obj).includes(prop)
   },
   ownKeys: function(obj) {
-    //console.log('Proxy OWN KEYS')
-    return [... new Set(['_base', ...Object.keys(obj._props), ...Object.keys(obj._bodyprops), ...Object.keys(obj._base || {})])]
+    return [... new Set([...Object.keys(obj), ...Object.keys(obj._props), ...Object.keys(obj._bodyprops)])]
   },
+
   getOwnPropertyDescriptor: function (obj, prop) {
     //console.log('PROXY PROPDESCR')
     const val = mItemProxyGetter(obj, prop)
@@ -94,29 +105,14 @@ const proxyHandler = {
   }
 }
 
-export function serializeObject(object) {
-  const res = {}
-  Object.keys(object).forEach(k => {
-    let val = object[k]
-    if (Array.isArray(val)) {
-      val = val.map(i => i)
-    }
-    // TODO: if it is an object call this function
-    res[k] = val
-  })
-  return res
-}
-
 export class MItem {
   _props = {}
 
   _bodyprops = {}
 
-  _base = undefined
-
-  constructor(props = {}, base = undefined) {
-    this._props = props
-    this._base = base
+  constructor(props = {}) {
+    this.version = 1
+    this._props = {...this._props, ...props}
     const proxy = new Proxy(this, proxyHandler)
     if ('body' in props) {
       proxy.body = props.body
@@ -124,7 +120,7 @@ export class MItem {
     return proxy
   }
   static deserialize(item) {
-    return new MItem(item._props, item._base ? MItem.deserialize(item._base) : undefined)
+    return new MItem(item._props)
   }
 
   getSerializedProps(){
@@ -133,9 +129,7 @@ export class MItem {
 
   serialize() {
     return {
-      _props: _.cloneDeep(this._props),
-      _bodyprops: _.cloneDeep(this._bodyprops),
-      _base: this._base ? this._base.serialize() : undefined
+      _props: _.cloneDeep(this._props)
     }
   }
 }

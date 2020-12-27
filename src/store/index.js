@@ -4,21 +4,15 @@ import mutations from './mutations'
 import { createSharedMutations } from 'vuex-electron'
 
 
-
-
 const getters = {
-  items: state => state.items
+  allItems: state => state.items,
+  topLevelItems: state => state.items.filter(i => !i.encapsuler && !i.hasParent)
 }
-
-console.log(actions)
 
 export default createStore({
   strict: true,
   state: {
-    items: [],
-    _itemRelsCache: {
-      base: {}
-    }
+    items: []
   },
   mutations,
   actions,

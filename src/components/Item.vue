@@ -1,10 +1,13 @@
 <template>
   <div class="item-div" :class="{ 'line-through': item.done }" @click="clicked()">
-    <span v-if="item._base">(B) </span>
-    <span v-if="item.baseId && !item._base">$$B</span>
+    <span v-if="item._encapsulated">(X) </span>
+    <span v-if="hasEnca && !item._encapsulated">(X$$$) </span>
+    <span v-if="item._extends">(E) </span>
     <span v-if="item.hasDuplicate">(D)</span>
     <span>{{time}} </span>
+    <span v-if="item.project">[{{item.project}}] </span>
     <span>{{item.title}}</span>
+    <span>{{bodyx}}</span>
   </div>
   <div style="padding-left:20px">
     <item v-for="si in subItems" :key="si.id || si.title" :item="si"></item>
@@ -12,7 +15,6 @@
 </template>
 <script>
 import { MItem } from '@/common/model/mitem'
-import { mapGetters } from 'vuex'
 import { format, parseISO } from 'date-fns'
 export default {
   name: 'Item',
@@ -26,8 +28,19 @@ export default {
       this.emitter.emit('dialog-edit', this.item)
     }
   },
+  watch: {
+  },
   computed: {
-    ...mapGetters(['items']),
+    bodyx() {
+      this.item.body
+      return ""
+    },
+    hasEnca() {
+      if (this.item.rels) {
+        return this.item.rels.find(r => r.name === 'encapsulation')
+      }
+      return false
+    },
     time() {
       if (this.item.start) {
         console.log(this.item.start)
@@ -37,35 +50,7 @@ export default {
       }
     },
     subItems() {
-
-      return this.items.filter(i => {
-        if (i.rels) {
-            let res = i.rels.find(r => r.role === 'child' && r.other === this.item.id)
-            return res || false
-        }
-        return false
-      })
-
-      /*
-      if(this.item.subItems){
-        // find subtiems with id first
-        let sub = this.item.subItems.filter(si => typeof si === 'string').map(si => this.items.find(ii => ii.id == si)).filter(i => i)
-        let subTitles = sub.map(s => s.title)
-        let subNoId = this.item.subItems.filter(si => typeof si === 'object' && !subTitles.includes(si.title)).map(si => new MItem({...si, parent: this.item.id}))
-        return [...sub, ...subNoId]
-        */
-        /*
-      return this.item.subItems.map(si => {
-        if (typeof si === 'object'){
-          return new MItem({...si, parent: this.item.id})
-        }
-        if(typeof si === 'string'){
-          return this.items.find(i => i.id === si)
-        }
-        return {title: 'undefined subitem'}
-      }).filter(si => si)
-      */
-
+      return this.item.childs?.map(i => i.encapsuler || i)
     }
   }
 }

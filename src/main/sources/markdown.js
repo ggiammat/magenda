@@ -21,21 +21,34 @@ export class MarkdownItemSource extends ItemSource {
   deleteItem (item) {
     log.info('Deleting item into MainItemSource')
     fs.renameSync(`${this.dataPath}/${item.id}.md`,`${this.dataPath}/trash/${item.id}.md`)
-    this.sourceManager.store.commit(Mutation.DELETE_ITEM, item.id)
+    console.log('SubItems:', this.subItemsRefs[item.id])
+
+    //this.subItemsRefs[item.id].forEach(ref => {
+    //  this.sourceManager.store.commit(Mutation.DELETE_ITEM, ref)
+    //})
+    this.sourceManager.store.commit(Mutation.DELETE_ITEM, [item.id, ...(this.subItemsRefs[item.id] || [])])
+    delete this.subItemsRefs[item.id]
   }
 
 
   saveItem (item, updates) {
 
     if (item.type === 'virtual-subitem') {
+      console.log('MarkdownSource - It\'s a virtual-subitem')
       let newItem = new MItem()
-      newItem.baseId = item.id
+      //newItem.baseId = item.id
+      newItem.rels = [{
+        name: 'encapsulation',
+        other: item.id,
+        role: 'encapsulator'
+      }]
       this.saveItem(newItem, updates)
       return
     }
 
     // no id. It's a new item
     if (!item.id) {
+      console.log('MarkdownSource - It\'s a new item')
       item.id = uuidv4()
       if (updates) {
         Object.keys(updates).forEach(k => item[k] = updates[k])
@@ -44,6 +57,7 @@ export class MarkdownItemSource extends ItemSource {
       const subs = this.createSubItems(item)
       this.sourceManager.store.commit(Mutation.LOAD_ITEMS, [item.serialize(), ...subs.map(s => s.serialize())])
     } else {
+      console.log('MarkdownSource - It\'s an update')
       // It's an update
       let updatedItem = MItem.deserialize(item.serialize()) // clone the item because the original is in vuex and cannot be modified outside a mutation
       Object.keys(updates).forEach(k => (updatedItem[k] = updates[k]));
@@ -53,23 +67,28 @@ export class MarkdownItemSource extends ItemSource {
         updates: updates
       });
 
+      //await new Promise(resolve => setTimeout(resolve, 5000))
+
       //update the subitems. For simplicity we delete all the existing and recreate the new
-      this.subItemsRefs[item.id].forEach(ref => {
-        this.sourceManager.store.commit(Mutation.DELETE_ITEM, ref)
-      })
+      //this.subItemsRefs[item.id].forEach(ref => {
+      //  this.sourceManager.store.commit(Mutation.DELETE_ITEM, ref)
+      //})
+      this.sourceManager.store.commit(Mutation.DELETE_ITEM, this.subItemsRefs[item.id])
+      delete this.subItemsRefs[item.id]
 
-      console.log('START creating subitems')
+      //await new Promise(resolve => setTimeout(resolve, 5000))
+
       const subs = this.createSubItems(updatedItem)
-      console.log('END creating subitems')
-      this.sourceManager.store.commit(Mutation.LOAD_ITEMS, subs.map(s => s.serialize()))
-
+      if(subs.length > 0) {
+        this.sourceManager.store.commit(Mutation.LOAD_ITEMS, subs.map(s => s.serialize()))
+      }
     }
   }
 
 
 
   writeItemToFile(item){
-    const toSave = ['title', 'week', 'done', 'start', 'subItems', 'parent', 'source', 'sourceId', 'baseId', 'rels', 'role', 'other']
+    const toSave = ['title', 'week', 'done', 'start', 'subItems', 'parent', 'source', 'sourceId', 'rels', 'role', 'other', 'name'] //name is only for the relationships... find a better way to filter rels fields
     let d = YAML.stringify(item.getSerializedProps(), toSave)
     let text = item.body || ''
     let markdown = `---\n${d}---\n\n${text}`
@@ -128,9 +147,16 @@ export class MarkdownItemSource extends ItemSource {
           let subItem = new MItem(si)
           subItem.id = `${item.id}:${this.hashCode(si.title)}`
           subItem.type = 'virtual-subitem'
+          subItem.source = this.source
           subItem.rels = [{
               other: item.id,
-              role: "child"
+              role: "child",
+              name: "parent"
+            },
+            {
+              name: 'extends',
+              other: item.id,
+              role: 'extender'
             }
           ]
           res.push(subItem)

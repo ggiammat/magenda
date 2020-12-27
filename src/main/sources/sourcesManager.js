@@ -57,6 +57,7 @@ export class SourcesManager {
     */
 
     ipcMain.on('mag:source:save-item', (event, itemOrId, updates) => {
+      console.log('SAVE ITEM RECEIVED', itemOrId, updates)
       let item = typeof itemOrId === 'object' ? MItem.deserialize(itemOrId) : this.store.state.items.find(i => i.id === itemOrId)
 
       let itemSource = item.source || 'default'

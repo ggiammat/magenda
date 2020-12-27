@@ -65,16 +65,20 @@ export default {
       //const bodySubItems = getSubItems(this.item.body)
       //this.item._bodyprops.subItems = bodySubItems
       this.item.start = this.startDate?.toISOString() || undefined
+    },
+    'item.done'() {
+      console.log('ITEM DONE', this.item.done)
     }
   },
   methods: {
     findItemById(itemId) {
-      return this.items.find(i => i.id.toString() === itemId.toString())
+      return this.allItems.find(i => i.id.toString() === itemId.toString())
     },
     show(itemId) {
       if(itemId){
         if(typeof itemId === 'string'){
-          this.item = MItem.deserialize(this.findItemById(itemId).serialize())
+          let it = this.findItemById(itemId).serialize()
+          this.item = MItem.deserialize(it)
         } else if(itemId instanceof MItem) {
           this.item = new MItem(itemId.getSerializedProps())
         } else {

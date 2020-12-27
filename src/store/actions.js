@@ -1,6 +1,7 @@
 import * as Mutation from './mutation-types'
 
 export default {
+  /*
   loadItems({ commit }, items) {
     return commit(Mutation.LOAD_ITEMS, items)
   },
@@ -14,6 +15,7 @@ export default {
   deleteItem({ commit }, itemId) {
     return commit(Mutation.DELETE_ITEM, itemId)
   },
+  */
   resetState({ commit }) {
     return commit(Mutation.RESET_STATE)
   }

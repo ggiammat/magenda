@@ -4,7 +4,7 @@ import { ipcRenderer } from 'electron'
 
 export default {
   computed: {
-    ...mapGetters(['items']),
+    ...mapGetters(['allItems']),
   },
   methods: {
     updateItem(itemId, updates){
