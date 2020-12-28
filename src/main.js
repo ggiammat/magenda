@@ -21,4 +21,6 @@ app.config.globalProperties.emitter = emitter
 
 app.mount("#app")
 
-ipcRenderer.send('vue-initialized')
+let res = ipcRenderer.sendSync("mag:source:init-store")
+console.log(res)
+store.commit('INIT_STORE', res.items)

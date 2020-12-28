@@ -56,6 +56,13 @@ export class SourcesManager {
     })
     */
 
+    ipcMain.on("mag:source:init-store", (event, itemsFilter) => {
+      console.log('itemsFilter not yet supported:', itemsFilter)
+      event.returnValue = {
+        items: this.store.state.items.map(i => i.serialize())
+      }
+    })
+
     ipcMain.on('mag:source:save-item', (event, itemOrId, updates) => {
       console.log('SAVE ITEM RECEIVED', itemOrId, updates)
       let item = typeof itemOrId === 'object' ? MItem.deserialize(itemOrId) : this.store.state.items.find(i => i.id === itemOrId)
@@ -71,7 +78,9 @@ export class SourcesManager {
       this.sources[itemSource].deleteItem(item)
     })
 
+    this.init('all')
 
+    /*
     ipcMain.on('vue-initialized', () => {
       log.info('VUE INITIALIZED RECEIVED')
       log.info('STORE ITEMS', this.store.state.items.length)
@@ -79,6 +88,7 @@ export class SourcesManager {
       log.info('STORE ITEMS', this.store.state.items.length)
       this.load('all')
     })
+    */
     //this.listenForIpcMainEvents()
   }
 
@@ -100,6 +110,13 @@ export class SourcesManager {
       s[1].load(query)
     })
   }
+
+  init(query) {
+    Object.entries(this.sources).forEach(s => {
+      s[1].init(query)
+    })
+  }
+
 
   notifyUpdatedItems(source, items) {
     //const { dedupItems, updatedOrig } = deduplicateItems(items, this.store.state.items)

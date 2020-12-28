@@ -5,6 +5,13 @@ import { reactive } from 'vue'
 
 
 export default {
+  [Mutation.INIT_STORE](state, items) {
+    console.log('initStore', state, items)
+    const newItems = items.map(i => reactive(MItem.deserialize(i)))
+    const newAllItems = state.items.concat(newItems)
+    relTracker.updateRelations(newItems, 'add', newAllItems)
+    state.items = newAllItems
+  },
   [Mutation.RESET_STATE](state) {
     state.items = []
     relTracker.reset()

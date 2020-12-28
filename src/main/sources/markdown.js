@@ -122,6 +122,10 @@ export class MarkdownItemSource extends ItemSource {
     this.sourceManager.store.commit(Mutation.LOAD_ITEMS, this.loadItems().map(i=>i.serialize()))
   }
 
+  init(query) {
+    this.sourceManager.store.commit(Mutation.INIT_STORE, this.loadItems().map(i=>i.serialize()))
+  }
+
   loadItems(query) {
     var items = []
     fs.readdirSync(this.dataPath).forEach(file => {
