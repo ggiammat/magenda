@@ -70,11 +70,13 @@ const mItemProxySetter = function(obj, prop, value) {
     }
   }
 
-  if (prop.startsWith("_")) {
-    obj[prop] = value
+  if (Object.prototype.hasOwnProperty.call(obj._props, prop)) {
+    obj._props[prop] = value
   }
 
-  obj._props[prop] = value
+
+  obj[prop] = value
+
   return true
 }
 
@@ -106,7 +108,18 @@ const proxyHandler = {
 }
 
 export class MItem {
-  _props = {}
+
+  _props = {
+    id: undefined,
+    type: undefined,
+    title: undefined,
+    week: undefined,
+    done: undefined,
+    start: undefined,
+    source: undefined,
+    sourceId: undefined,
+    rels: undefined
+  }
 
   _bodyprops = {}
 
