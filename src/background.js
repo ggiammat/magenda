@@ -1,15 +1,10 @@
 "use strict";
 
-import { app, protocol, BrowserWindow } from "electron";
+import { app, protocol, BrowserWindow, ipcMain, Tray, Menu, globalShortcut } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension from "electron-devtools-installer";
 const isDevelopment = process.env.NODE_ENV !== "production";
-
-
-
-
-
-
+import path from 'path'
 
 
 
@@ -54,6 +49,10 @@ async function createWindow() {
 
 // Quit when all windows are closed.
 app.on("window-all-closed", () => {
+
+  //not close if there is the tray even if all windows are closed
+  if(tray) return
+
   // On macOS it is common for applications and their menu bar
   // to stay active until the user quits explicitly with Cmd + Q
   if (process.platform !== "darwin") {
@@ -83,6 +82,7 @@ app.on("ready", async () => {
     }
   }
   createWindow();
+  createTray();
 });
 
 // Exit cleanly on request from parent process in development mode.
@@ -99,3 +99,101 @@ if (isDevelopment) {
     });
   }
 }
+
+
+// CUSTOMIZATION
+
+let tray = null
+async function createTray() {
+  tray = new Tray(path.join(__dirname, '/logo.png'))
+
+  if (process.platform === 'win32') {
+    tray.on('click', tray.popUpContextMenu)
+  }
+
+  const menu = Menu.buildFromTemplate([
+    {
+      label: 'Quit',
+      click() {
+        app.quit()
+      }
+    },
+    {
+      label: 'Open',
+      click() {
+        createWindow()
+      }
+    },
+    {
+      label: 'Finder',
+      click() {
+        showFinder()
+      }
+    }
+  ])
+
+  tray.setToolTip('Clipmaster')
+  tray.setContextMenu(menu)
+}
+
+
+
+
+app.whenReady().then(() => {
+  // Register a 'CommandOrControl+X' shortcut listener.
+  const ret = globalShortcut.register('CommandOrControl+W', () => {
+    console.log('CommandOrControl+W is pressed')
+    showFinder()
+  })
+
+  if (!ret) {
+    console.log('registration failed')
+  }
+
+  // Check whether a shortcut is registered.
+  console.log(globalShortcut.isRegistered('CommandOrControl+W'))
+})
+
+app.on('will-quit', () => {
+  // Unregister a shortcut.
+  globalShortcut.unregister('CommandOrControl+W')
+
+  // Unregister all shortcuts.
+  globalShortcut.unregisterAll()
+})
+
+
+
+
+
+function showFinder() {
+  let win = new BrowserWindow({
+    width: 800,
+    height: 600,
+    useContentSize: true,
+    //frame: false,
+    webPreferences: {
+      // Use pluginOptions.nodeIntegration, leave this alone
+      // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
+      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
+    }
+  })
+
+  if (process.env.WEBPACK_DEV_SERVER_URL) {
+    // Load the url of the dev server if in development mode
+    win.loadURL(process.env.WEBPACK_DEV_SERVER_URL + '/#/finder')
+    //if (!process.env.IS_TEST) win.webContents.openDevTools()
+  } else {
+    createProtocol('app')
+    // Load the index.html when not in development
+    win.loadURL('app://./index.html#finder')
+  }
+  win.on('close', function() {
+    win = null
+  })
+}
+
+ipcMain.on('showFinder', function() {
+  // Create the browser window.
+  showFinder()
+})
