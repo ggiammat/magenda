@@ -46,7 +46,7 @@
     "vue-router": "^4.0.0-0",
     "vuedraggable": "^4.0.1",
     "vuex": "^4.0.0-0",
-    "vuex-electron": "github:jean-moreno/vuex-electron",
+    "vuex-electron": "github:gabrielegiammatteo/vuex-electron",
     "webfontloader": "^1.6.28",
     "yaml": "^2.0.0-1"
   },
