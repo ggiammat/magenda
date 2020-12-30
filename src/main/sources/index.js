@@ -5,9 +5,13 @@ export class ItemSource {
   configuration = null
   name = null
 
+  defaultConfiguration = {
+    saveBodyProps: false
+  }
+
   constructor(name, configuration, sourceManager) {
     this.name = name
-    this.configuration = configuration
+    this.configuration = { ...this.defaultConfiguration, ...configuration }
     this.sourceManager = sourceManager
     log.info(`📁 Initialized ItemSource "${name}"`)
   }

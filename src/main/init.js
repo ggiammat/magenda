@@ -11,7 +11,7 @@ function loadConfiguration() {
 }
 
 function initSources(configuration, store) {
-  new SourcesManager(configuration.sources, store)
+  return new SourcesManager(configuration.sources, store)
 }
 
 export { loadConfiguration, initSources }

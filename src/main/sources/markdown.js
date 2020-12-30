@@ -50,6 +50,7 @@ export class MarkdownItemSource extends ItemSource {
     if (!item.id) {
       console.log('MarkdownSource - It\'s a new item')
       item.id = uuidv4()
+      item.source = this.source
       if (updates) {
         Object.keys(updates).forEach(k => item[k] = updates[k])
       }
@@ -61,7 +62,7 @@ export class MarkdownItemSource extends ItemSource {
       // It's an update
       let updatedItem = MItem.deserialize(item.serialize()) // clone the item because the original is in vuex and cannot be modified outside a mutation
       Object.keys(updates).forEach(k => (updatedItem[k] = updates[k]));
-      this.writeItemToFile(updatedItem)
+      this.writeItemToFile(updatedItem, Object.keys(updates))
       this.sourceManager.store.commit(Mutation.UPDATE_ITEM, {
         itemId: item.id,
         updates: updates
@@ -73,7 +74,9 @@ export class MarkdownItemSource extends ItemSource {
       //this.subItemsRefs[item.id].forEach(ref => {
       //  this.sourceManager.store.commit(Mutation.DELETE_ITEM, ref)
       //})
-      this.sourceManager.store.commit(Mutation.DELETE_ITEM, this.subItemsRefs[item.id])
+      if (this.subItemsRefs[item.id]) {
+        this.sourceManager.store.commit(Mutation.DELETE_ITEM, this.subItemsRefs[item.id])
+      }
       delete this.subItemsRefs[item.id]
 
       //await new Promise(resolve => setTimeout(resolve, 5000))
@@ -87,13 +90,36 @@ export class MarkdownItemSource extends ItemSource {
 
 
 
-  writeItemToFile(item){
-    const toSave = ['title', 'week', 'done', 'start', 'subItems', 'parent', 'source', 'sourceId', 'rels', 'role', 'other', 'name'] //name is only for the relationships... find a better way to filter rels fields
-    let d = YAML.stringify(item.getSerializedProps(), toSave)
-    let text = item.body || ''
-    let markdown = `---\n${d}---\n\n${text}`
-    fs.writeFileSync(`${this.dataPath}/${item.id}.md`, markdown, 'utf-8')
-    console.log('item wrote to ', `${this.dataPath}/${item.id}.md`)
+  writeItemToFile(item, updatedFields){
+    console.log('Write item to file', updatedFields)
+    let serialized = item.serialize()
+    let body = serialized.body || ''
+
+    serialized.body = undefined
+    serialized.id = undefined
+    serialized.source = undefined
+    if (!this.configuration.saveBodyProps) {
+      serialized.bodyProps = undefined
+    }
+
+    if (item.bodyRef && updatedFields?.includes('body')) {
+      body = ''
+      // what if the bodyRef is not a file (e.g. an url)?
+      if (fs.existsSync(item.bodyRef)) {
+        fs.writeFileSync(item.bodyRef, item.body, 'utf-8')
+        console.log(`Body wrote to ${item.bodyRef}`)
+        // save body props
+      } else {
+        console.error(`Trying to save to bodyRef "${item.bodyRef}, but the file does not exist"`)
+      }
+    }
+
+    console.log('writing metadata', serialized)
+    let metadata = YAML.stringify(serialized)
+    let file = this.dataPath + "/" + item.id + ".md"
+    let markdown = `---\n${metadata}---\n\n${body}`
+    fs.writeFileSync(file, markdown, 'utf-8')
+    console.log(`item wrote to ${file}`)
   }
 
   updateItem (itemId, updates, item) {
@@ -131,6 +157,7 @@ export class MarkdownItemSource extends ItemSource {
     fs.readdirSync(this.dataPath).forEach(file => {
       if (!file.endsWith('.md')) return
       let item = this._loadItemFromFile(`${this.dataPath}/${file}`)
+      console.log('loaded item', item)
       items.push(item)
       items = items.concat(this.createSubItems(item))
     })
@@ -143,6 +170,7 @@ export class MarkdownItemSource extends ItemSource {
 
   createSubItems(item) {
     const res = []
+    console.log('Creating item subitems', item.subItems)
     if (item.subItems) {
       this.subItemsRefs[item.id] = []
       item.subItems
@@ -177,11 +205,11 @@ export class MarkdownItemSource extends ItemSource {
       try {
         let item = {
           id: path.basename(file, '.md'),
-          body: m[2],
-          ...YAML.parse(m[1]),
+          body: m[2] || undefined,
+          ...YAML.parseDocument(m[1], { customTags: ['timestamp'] }).toJS(),
           source: this.source
         }
-        return new MItem(item)//MItem.buildFromDict(item)
+        return new MItem(item) //MItem.buildFromDict(item)
       } catch (err) {
         log.error(`Error loading item from ${file}: ${err}`)
       }
