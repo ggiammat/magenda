@@ -23,7 +23,12 @@ if (!gotTheLock) {
     // Someone tried to run a second instance, we should focus our window.
     console.log('second-instance', commandLine, workingDirectory)
 
-    let filename = workingDirectory + "/" + commandLine[1]
+    let filename = commandLine[1]
+
+    // if the filename is relative, try to prefix the working dir
+    if (!filename.startsWith('/')) {
+      filename = workingDirectory + '/' + filename
+    }
     let itemId = sourceManager.sources['localFiles'].openFile(filename)
     showEditor(itemId)
   })
