@@ -6,7 +6,7 @@
   </el-input>
   <el-checkbox v-model="item.done">Done</el-checkbox>
   <el-date-picker
-    v-model="startDate"
+    v-model="item.start"
     type="datetime"
     placeholder="Select date and time">
   </el-date-picker>
