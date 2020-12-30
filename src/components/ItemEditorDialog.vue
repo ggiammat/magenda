@@ -39,6 +39,7 @@
 import { MItem } from '@/common/model/mitem'
 import MarkdownEditor from '@/components/MarkdownEditor.vue'
 import storeMixin from '@/components/mixins/store'
+import {ipcRenderer } from 'electron'
 
 // var reISO = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*))(?:Z|(\+|-)([\d|:]*))?$/
 
@@ -92,6 +93,11 @@ export default {
         this.startDate = new Date(this.item.start)
       } else {
         this.startDate = undefined
+      }
+
+
+      if (this.item.bodyRef) {
+        this.item.body = ipcRenderer.sendSync('load-body', this.item.bodyRef)
       }
 
       // FIXME: body appear to be alwasy modified even if it is not (it probably depends on muya that sets the body when it is initialized)
