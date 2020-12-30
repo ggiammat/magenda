@@ -1,6 +1,7 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import Home from "../views/Home.vue";
 import Finder from "../views/Finder.vue";
+import Item from "@/views/Item.vue"
 
 const routes = [
   {
@@ -12,6 +13,12 @@ const routes = [
     path: "/finder",
     name: "finder",
     component: Finder
+  },
+  {
+    path: "/editor/:itemId",
+    name: "editor",
+    component: Item,
+    props: true
   },
   {
     path: "/about",
