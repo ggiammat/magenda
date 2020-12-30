@@ -15,7 +15,7 @@
 </template>
 <script>
 import { MItem } from '@/common/model/mitem'
-import { format, parseISO } from 'date-fns'
+import { format } from 'date-fns'
 export default {
   name: 'Item',
   props: {
@@ -43,8 +43,8 @@ export default {
     },
     time() {
       if (this.item.start) {
-        console.log(this.item.start)
-        return format(parseISO(this.item.start), 'h:mm aaaa')
+        console.log(this.item.id, this.item.start)
+        return format(this.item.start, 'h:mm aaaa')
       } else {
         return undefined
       }

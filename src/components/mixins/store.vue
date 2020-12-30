@@ -7,6 +7,11 @@ export default {
     ...mapGetters(['allItems']),
   },
   methods: {
+
+    findItemById(itemId) {
+      return this.allItems.find(i => i.id.toString() === itemId.toString())
+    },
+
     updateItem(itemId, updates){
 
         ipcRenderer.send('mag:source:save-item', itemId, updates)
