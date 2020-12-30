@@ -46,8 +46,8 @@ export class O365ItemSource extends MarkdownItemSource {
         {
         id: ri.objectId,
         title: ri.subject,
-        start: new Date(ri.start.dateTime).toISOString(),
-        end: new Date(ri.end.dateTime).toISOString(),
+        start: new Date(ri.start.dateTime),
+        end: new Date(ri.end.dateTime),
         allDay: ri.isAllDay,
         sourceId: ri.objectId,
         source: "o365",
