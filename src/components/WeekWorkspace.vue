@@ -16,7 +16,6 @@ import ItemList from "@/components/ItemList"
 import WeekCalendar from "@/components/WeekCalendar"
 import { endOfWeek, startOfWeek, addWeeks, addDays } from 'date-fns'
 import { MItem } from '@/common/model/mitem'
-
 export default {
   components: {
     ItemEditorDialog,

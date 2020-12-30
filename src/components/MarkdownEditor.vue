@@ -107,23 +107,6 @@ export default {
       this.$emit('update:modelValue', event.markdown)
     }
   },
-  watch: {
-    /*
-    modelValue(val) {
-      if (typeof val == 'undefined') return
-      if (val !== this.editor.markdown) {
-        console.debug('MDEDITOR', 'Updating content')
-        this.editor.setMarkdown(val)
-      }
-    },
-    */
-    shown(val) {
-      if (val) {
-        console.log('MUYA EDITOR SHOWN')
-        this.activate()
-      }
-    }
-  },
   mounted() {
     this.activate()
   }
