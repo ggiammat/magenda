@@ -109,6 +109,8 @@ class BaseMItem {
   alwaysSerialziable(){
       return {
       id: undefined,
+      type: undefined,
+      source: undefined,
       rels: undefined,
       bodyProps: {}
     }
@@ -144,11 +146,9 @@ class BaseMItem {
 export class MItem extends BaseMItem {
   _serializable = {
     ...super.alwaysSerialziable(),
-    type: undefined,
     title: undefined,
     done: undefined,
     start: undefined,
-    source: undefined,
     sourceId: undefined,
     body: undefined,
     bodyRef: undefined,
