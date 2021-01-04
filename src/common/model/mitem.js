@@ -43,11 +43,6 @@ const mItemProxyGetter = function(obj, prop) {
 }
 
 const mItemProxySetter = function(obj, prop, value) {
-  if (prop === 'body'){
-    obj._serializable.body = value
-    obj._serializable.bodyProps = extractBodyProps(value)
-    return true
-  }
 
   //console.log('MItem Proxy Set', prop, value)
   if (MERGING_PROPS.includes(prop)) {
@@ -64,11 +59,17 @@ const mItemProxySetter = function(obj, prop, value) {
 
   if (Object.prototype.hasOwnProperty.call(obj._serializable, prop)) {
     obj._serializable[prop] = value
+    if (prop === 'body') {
+      obj._serializable.bodyProps = extractBodyProps(value)
+    }
     return true
   }
 
 
   obj[prop] = value
+  if (prop === 'body') {
+    obj._serializable.bodyProps = extractBodyProps(value)
+  }
 
   return true
 }
@@ -102,42 +103,77 @@ const proxyHandler = {
   }
 }
 
-export class MItem {
 
+class BaseMItem {
+
+  alwaysSerialziable(){
+      return {
+      id: undefined,
+      rels: undefined,
+      bodyProps: {}
+    }
+  }
+
+
+  init(props) {
+    const proxy = new Proxy(this, proxyHandler)
+    Object.entries(props).filter(e => e[1]).forEach(e => proxy[e[0]] = e[1])
+    return proxy
+  }
+
+  static deserialize(props) {
+    if (props.class === 'BoardMItem'){
+      return new BoardMItem(props.serializable)
+    }
+    return new MItem(props.serializable)
+  }
+
+  getSerializedProps(){
+    console.warn('Using deprecated getSerializedProps()')
+    return this.serialize().serializable
+  }
+
+  serialize() {
+    return {
+      class: this.constructor.name,
+      serializable: _.cloneDeep(this._serializable)
+    }
+  }
+}
+
+export class MItem extends BaseMItem {
   _serializable = {
-    id: undefined,
+    ...super.alwaysSerialziable(),
     type: undefined,
     title: undefined,
     done: undefined,
     start: undefined,
     source: undefined,
     sourceId: undefined,
-    rels: undefined,
     body: undefined,
     bodyRef: undefined,
-    bodyProps: {},
     deadline: undefined
   }
 
   constructor(props = {}) {
-    this._serializable = {...this._serializable, ...props}
-    const proxy = new Proxy(this, proxyHandler)
-    if(!this.bodyProps && props.body) {
-        proxy.body = props.body
-    }
-    //Object.entries(props).filter(e => e[1]).forEach(e => proxy[e[0]] = e[1])
-    return proxy
+    super()
+    return this.init(props)
   }
-  static deserialize(props) {
-    return new MItem(props)
+}
+
+
+export class BoardMItem extends BaseMItem {
+  _serializable = {
+    ...super.alwaysSerialziable(),
+    x: undefined,
+    y: undefined,
+    w: undefined,
+    h: undefined
   }
 
-  getSerializedProps(){
-    console.warn('Using deprecated getSerializedProps()')
-    return this.serialize()
+  constructor(props = {}) {
+    super()
+    return this.init(props)
   }
 
-  serialize() {
-    return _.cloneDeep(this._serializable)
-  }
 }
