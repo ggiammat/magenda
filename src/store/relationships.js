@@ -1,6 +1,14 @@
 
 
 const relationsActions = {
+  boardItemRel: {
+    add(item, otherItem) {
+      item.targetItem = otherItem
+    },
+    delete(item) {
+      item.targetItem = undefined
+    }
+  },
   encapsulation: {
     add(item, otherItem) {
       item._encapsulated = otherItem

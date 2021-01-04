@@ -1,6 +1,7 @@
 import { MarkdownItemSource } from './markdown'
 import { O365ItemSource } from './o365'
 import { LocalFilesItemSource } from './localfiles'
+import { BoardsItemSource } from './boards'
 import { ipcMain } from 'electron'
 import log from 'electron-log'
 import * as Mutation from './../../store/mutation-types'
@@ -42,6 +43,8 @@ export class SourcesManager {
         this.sources['o365'] = new O365ItemSource('o365', conf, this)
       } else if (id === 'localFiles') {
         this.sources['localFiles'] = new LocalFilesItemSource('localFiles', conf, this)
+      } else if (id === 'boards') {
+        this.sources['boards'] = new BoardsItemSource('boards', conf, this)
       }
     })
     this.store = store

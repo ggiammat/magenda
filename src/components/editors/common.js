@@ -32,7 +32,7 @@ function setup(props) {
   } else if (props.itemId) {
     let it = allItems.find(i => i.id === props.itemId)
     if (it) {
-      item = new MItem(it.serialize())
+      item = MItem.deserialize(it.serialize())
     } else {
       console.error(`Could not find item with id ${props.itemId}`)
     }

@@ -3,7 +3,7 @@ import log from 'electron-log'
 import fs from 'fs'
 import YAML from 'yaml'
 import path from 'path'
-import { MItem } from '../../common/model/mitem'
+import { MItem, BoardMItem } from '../../common/model/mitem'
 import { v4 as uuidv4 } from 'uuid'
 import * as Mutation from './../../store/mutation-types'
 
@@ -92,7 +92,7 @@ export class MarkdownItemSource extends ItemSource {
 
   writeItemToFile(item, updatedFields){
     console.log('Write item to file', updatedFields)
-    let serialized = item.serialize()
+    let serialized = item.serialize().serializable
     let body = serialized.body || ''
 
     serialized.body = undefined
@@ -157,7 +157,7 @@ export class MarkdownItemSource extends ItemSource {
     fs.readdirSync(this.dataPath).forEach(file => {
       if (!file.endsWith('.md')) return
       let item = this._loadItemFromFile(`${this.dataPath}/${file}`)
-      console.log('loaded item', item)
+      console.log(item)
       items.push(item)
       items = items.concat(this.createSubItems(item))
     })
@@ -170,7 +170,6 @@ export class MarkdownItemSource extends ItemSource {
 
   createSubItems(item) {
     const res = []
-    console.log('Creating item subitems', item.subItems)
     if (item.subItems) {
       this.subItemsRefs[item.id] = []
       item.subItems
@@ -199,6 +198,10 @@ export class MarkdownItemSource extends ItemSource {
   }
 
   _loadItemFromFile(file) {
+    return new MItem(this._loadRawItemFromFile(file))
+  }
+
+  _loadRawItemFromFile(file) {
     const markdown = fs.readFileSync(file, 'utf-8')
     let m
     if ((m = regex.exec(markdown)) !== null) {
@@ -209,7 +212,7 @@ export class MarkdownItemSource extends ItemSource {
           ...YAML.parseDocument(m[1], { customTags: ['timestamp'] }).toJS(),
           source: this.source
         }
-        return new MItem(item) //MItem.buildFromDict(item)
+        return item
       } catch (err) {
         log.error(`Error loading item from ${file}: ${err}`)
       }
