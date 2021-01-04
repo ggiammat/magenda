@@ -47,16 +47,16 @@ function setup(props) {
   }
 
   const save = () => {
+    let updates = item.__updates
+    if(updates.__v_isReactive){
+      updates = {}
+      Object.entries(item.__updates).forEach(e => updates[e[0]] = e[1])
+    }
     if (item.id) {
-      let updates = item.__updates
-      if(updates.__v_isReactive){
-        updates = {}
-        Object.entries(item.__updates).forEach(e => updates[e[0]] = e[1])
-      }
       console.log('updated props', updates)
       updateItem(item.id, updates)
     } else {
-      saveItem(item)
+      saveItem(item, updates)
     }
   }
 

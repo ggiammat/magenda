@@ -1,7 +1,7 @@
 import { ipcRenderer } from 'electron'
 
-export function saveItem(item) {
-  ipcRenderer.send('mag:source:save-item', item.serialize())
+export function saveItem(item, updates) {
+  ipcRenderer.send('mag:source:save-item', item.serialize(), updates)
 }
 
 export function updateItem(itemId, updates) {
