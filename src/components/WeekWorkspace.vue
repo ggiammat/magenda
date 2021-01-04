@@ -37,17 +37,23 @@ export default {
     createNew(){
       console.log('CreateNew called')
       this.emitter.emit('dialog-edit', new MItem({deadline: this.thisWeekEnd}))
-    }
-  },
-  mounted(){
-    this.emitter.on('dialog-edit', (item) => {
+    },
+    registerDialog(item) {
       console.log('called dialog edit', item)
       let arg = item.id
       if(!arg) {
         arg = item
       }
       this.$refs.dialog.show(arg)
-    })
+    }
+  },
+  unmounted(){
+    console.log('WORKSPACE UNMOUNTED')
+    this.emitter.off('dialog-edit', this.registerDialog)
+  },
+  mounted(){
+    console.log('WORKSPACE MOUNTED')
+    this.emitter.on('dialog-edit', this.registerDialog)
   }
 }
 </script>
