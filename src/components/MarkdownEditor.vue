@@ -1,6 +1,7 @@
 <template>
-  <div class="muya-container" ref="container">
-    <div style="text-align: left" ref="editor" />
+  <div class="markdown-editor">
+    <div v-show="editor" ref="muyaContainer"></div>
+    <div v-show="!editor" @click="activate()" ref="muyaPlaceholder"></div>
   </div>
 </template>
 
@@ -21,48 +22,40 @@ import LinkTools from '@/muya/lib/ui/linkTools'
 import FootnoteTool from '@/muya/lib/ui/footnoteTool'
 import TableBarTools from '@/muya/lib/ui/tableTools'
 
-//import '@/muya/themes/default.css'
-
 /*
 Only one instance of Muya can exist in the page because it users "id"
 attributes of elements (see: https://github.com/marktext/muya/issues/9)
 To overcome this limitation, we instantiate Muya only the first time it is
 used and then reuse always the same instance updating its position in the DOM,
-the content and the event listeners. This cannot be done only in the mounted()
-hook because in case the component is hidden and then re-shown (e.g. a dialog),
-mounted() will not be called.
+replacing the content and the event listeners.
 */
+
+// keep a reference to the MUYA instance
 var MUYA_INSTANCE = null
+
+// keep a reference to the MarkdownEditor component that currently has the
+// Muya instance in it
+var ACTIVE_EDITOR = null
 
 export default {
   name: 'MarkdownEditor',
   props: {
-    modelValue: String,
-    shown: Boolean
+    modelValue: String
   },
   data() {
     return {
-      editor: null,
-      text: null
+      editor: null
     }
+  },
+  mounted() {
+    this.activate()
   },
   methods: {
     activate() {
-      if (!MUYA_INSTANCE) {
-        this.createMuyaEditor()
-      } else {
-        this.moveHereMuyaEditor()
-      }
-      this.initMuyaEditor()
+      ACTIVE_EDITOR?._deactivateMuya()
+      this._activateMuya()
     },
-    createMuyaEditor() {
-      if (MUYA_INSTANCE) {
-        console.warn(
-          'Muya Editor already instantiated. Call initMuyaEditor() instead'
-        )
-        return
-      }
-
+    _createMuyaInstance() {
       Muya.use(TablePicker)
       Muya.use(QuickInsert)
       Muya.use(CodePicker)
@@ -70,45 +63,46 @@ export default {
       Muya.use(EmojiPicker)
       Muya.use(ImagePathPicker)
       Muya.use(ImageSelector, {
-        unsplashAccessKey: process.env.UNSPLASH_ACCESS_KEY,
-        photoCreatorClick: this.photoCreatorClick
+        unsplashAccessKey: process.env.UNSPLASH_ACCESS_KEY
       })
       Muya.use(Transformer)
       Muya.use(ImageToolbar)
       Muya.use(FormatPicker)
       Muya.use(FrontMenu)
-      Muya.use(LinkTools, {
-        jumpClick: this.jumpClick
-      })
+      Muya.use(LinkTools, {})
       Muya.use(FootnoteTool)
       Muya.use(TableBarTools)
 
-      const ele = this.$refs.editor
-      MUYA_INSTANCE = new Muya(ele, {
+      const ele = document.createElement('div')
+      document.body.appendChild(ele)
+      return new Muya(ele, {
         markdown: 'Welcoeme to Muya'
       })
     },
-    initMuyaEditor() {
-      this.editor = MUYA_INSTANCE
+    _getMuyaInstance() {
+      if (!MUYA_INSTANCE) {
+        MUYA_INSTANCE = this._createMuyaInstance()
+      }
+      return MUYA_INSTANCE
+    },
+    _activateMuya() {
+      this.editor = this._getMuyaInstance()
+      this.$refs.muyaContainer.appendChild(this.editor.container)
+      this.$refs.muyaPlaceholder.innerHTML = ""
       this.editor.setMarkdown(this.modelValue || '')
       this.editor.on('change', this.handleTextChanged)
+      ACTIVE_EDITOR = this
     },
-    moveHereMuyaEditor() {
-      let oldListeners = MUYA_INSTANCE.eventCenter.listeners.change
-      if (oldListeners) {
-        oldListeners.forEach(l => MUYA_INSTANCE.off('change', l.listener))
-      }
-      let elem = MUYA_INSTANCE.container.parentNode.removeChild(
-        MUYA_INSTANCE.container
-      )
-      this.$refs.container.appendChild(elem)
+    _deactivateMuya() {
+      this.editor.off('change', this.handleTextChanged)
+      this.$refs.muyaPlaceholder?.insertAdjacentHTML('afterbegin', this.editor.container.firstChild.innerHTML)
+      // not really necessary since the appendChild() (called in _activateMuya()) will also remove the element if it attached to the DOM
+      this.$refs.muyaContainer?.removeChild(this.editor.container)
+      this.editor = undefined
     },
     handleTextChanged(event) {
       this.$emit('update:modelValue', event.markdown)
     }
-  },
-  mounted() {
-    this.activate()
   }
 }
 </script>
