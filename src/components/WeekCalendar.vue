@@ -58,11 +58,10 @@ export default {
  },
   methods: {
     prevWeek(){
-      this.startDate = addWeeks(this.startDate, 1)
+      this.startDate = subWeeks(this.startDate, 1)
     },
     nextWeek(){
-      this.startDate = subWeeks(this.startDate, 1)
-
+      this.startDate = addWeeks(this.startDate, 1)
     },
     formatDay(date){
       console.log('formatting', date)
