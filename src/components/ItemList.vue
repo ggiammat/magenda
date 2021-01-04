@@ -34,12 +34,10 @@
 <script>
 import draggable from 'vuedraggable'
 import { mapGetters } from 'vuex'
-import { v4 as uuidv4 } from 'uuid'
 import Item from '@/components/Item'
 import { MItem } from '@/common/model/mitem'
-import storeMixin from '@/components/mixins/store'
+import { saveItem, updateItem } from '@/renderer/ipc'
 export default {
-  mixins: [storeMixin],
   components: {
     draggable,
     Item
@@ -113,12 +111,10 @@ export default {
       if(event.added){
         if(this.canDrop) {
         if(event.added.element.id){
-          this.updateItem(event.added.element.id, this.itemProps)
+          updateItem(event.added.element.id, this.itemProps)
         } else {
           let item = new MItem(event.added.element.getSerializedProps())
-          item.id = uuidv4()
-          Object.keys(this.itemProps).forEach(k => item[k] = this.itemProps[k])
-          this.saveItem(item)
+          saveItem(item , this.itemProps)
         }
         //this.updateItem(event.added.element.id, this.itemProps)
       }

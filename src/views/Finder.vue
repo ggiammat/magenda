@@ -16,11 +16,10 @@
 
 import { remote, ipcRenderer } from 'electron'
 import { mapGetters } from 'vuex'
-import storeMixin from '@/components/mixins/store'
 import { MItem } from '@/common/model/mitem'
+import { saveItem } from '@/renderer/ipc'
 
 export default {
-  mixins: [storeMixin],
   name: "Home",
   components: {
   },
@@ -56,7 +55,7 @@ export default {
     add() {
       let item = new MItem()
       item.title = this.input
-      this.saveItem(item)
+      saveItem(item)
     }
   }
 };

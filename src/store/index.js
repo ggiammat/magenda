@@ -6,7 +6,7 @@ import { createSharedMutations } from 'vuex-electron'
 
 const getters = {
   allItems: state => state.items,
-  topLevelItems: state => state.items.filter(i => !i.encapsuler && !i.hasParent)
+  topLevelItems: state => state.items.filter(i => !i.encapsuler && !i.hasParent && i.source != 'boards')
 }
 
 export default createStore({
