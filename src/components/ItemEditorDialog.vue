@@ -36,29 +36,34 @@ export default {
       itemRef: undefined,
       dialogVisible: false,
       currentEditor: "genericEditor",
-      sharedUpdatedProps: new Set()
+      sharedUpdatedProps: {
+        type: Object,
+        default: () => { return {} }
+      }
     }
   },
   computed: {
     ...mapGetters(['allItems'])
   },
   methods: {
-    show(itemId) {
+    show(item) {
 
-      this.dialogVisible = true
-
-      if(itemId){
-        if(typeof itemId === 'string'){
-          let it = this.allItems.find(i => i.id === itemId)
-          this.itemRef = MItem.deserialize(it.serialize())
-        } else if(itemId instanceof MItem) {
-          this.itemRef = new MItem(itemId.getSerializedProps())
+      if(item){
+        if(typeof item === 'string'){
+          let it = this.allItems.find(i => i.id === item)
+          this.itemRef = it
+        } else if(item instanceof MItem) {
+          this.itemRef = item
         } else {
-          this.itemRef = new MItem(itemId)
+          this.itemRef = new MItem(item)
         }
       } else {
-        this.itemRef = new MItem({week: 53})
+        this.itemRef = new MItem()
       }
+
+      this.sharedUpdatedProps = {}
+      this.dialogVisible = true
+
     },
     handleClose() {
       this.back()

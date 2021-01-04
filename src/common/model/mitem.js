@@ -104,6 +104,28 @@ const proxyHandler = {
 }
 
 
+
+function createEditingProxy(target, externalUpdatesTrackerDict) {
+  let updatesTrackerDict = externalUpdatesTrackerDict || {}
+  return new Proxy(target, {
+    updates: updatesTrackerDict,
+    get(obj, prop) {
+      if(prop === '__updates') {
+        return this.updates
+      }
+      if(Object.prototype.hasOwnProperty.call(this.updates, prop)) {
+        return this.updates[prop]
+      }
+      return Reflect.get(...arguments)
+    },
+    set(obj, prop, value) {
+      this.updates[prop] = value
+      return true
+    }
+  })
+}
+
+
 class BaseMItem {
 
   alwaysSerialziable(){
@@ -133,6 +155,10 @@ class BaseMItem {
   getSerializedProps(){
     console.warn('Using deprecated getSerializedProps()')
     return this.serialize().serializable
+  }
+
+  getEditingTrackerMItem(externalUpdatesTrackerDict){
+    return createEditingProxy(this, externalUpdatesTrackerDict)
   }
 
   serialize() {

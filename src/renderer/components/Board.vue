@@ -47,23 +47,7 @@ export default {
 
     const board = store.getters.allItems.find(i => i.type === 'item-board')
     console.log('BOARD ITEM FOUND', board)
-    const items = board.childs.map(i => new Proxy(i, {
-      updates: {},
-      get(obj, prop) {
-        if(prop === '__updates') {
-          return this.updates
-        }
-        if(Object.prototype.hasOwnProperty.call(this.updates, prop)) {
-          return this.updates[prop]
-        }
-        return obj[prop]
-      },
-      set(obj, prop, value) {
-        this.updates[prop] = value
-        return true
-      }
-
-    }))
+    const items = board.childs.map(i => i.getEditingTrackerMItem())
     const print = (val) => {
       console.log(val)
     }
