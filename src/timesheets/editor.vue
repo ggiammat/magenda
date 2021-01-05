@@ -1,7 +1,6 @@
 <template>
   <el-input-number v-model="item.par" :step="2" step-strictl></el-input-number>
   <el-checkbox v-model="ferieValue">Ferie</el-checkbox>
-  <el-button @click="save()">S</el-button>
 </template>
 
 <script>
