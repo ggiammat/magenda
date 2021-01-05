@@ -3,6 +3,7 @@
     <el-col :span="1">
       <el-button @click="currentPage = 'weekWorkspace'">Week</el-button>
       <el-button @click="currentPage = 'board'">Board</el-button>
+      <el-button @click="currentPage = 'timesheetsMonthlyReport'">TR</el-button>
     </el-col>
     <el-col :span="23">
       <component :is="currentPage"></component>
@@ -15,6 +16,7 @@
 
 import WeekWorkspace from '@/components/WeekWorkspace.vue'
 import Board from '@/renderer/components/Board.vue'
+import TimesheetsMonthlyReport from '@/timesheets/MonthlyReport'
 
 export default {
   name: "Home",
@@ -25,7 +27,8 @@ export default {
   },
   components: {
     WeekWorkspace,
-    Board
+    Board,
+    TimesheetsMonthlyReport
   }
 };
 </script>
