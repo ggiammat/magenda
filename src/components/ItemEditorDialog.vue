@@ -14,7 +14,8 @@
         <el-button>Delete</el-button>
       </template>
     </el-popconfirm>
-    <el-button type="primary" @click="closeAndSave()">Save</el-button>
+    <el-button @click="save()">Save</el-button>
+    <el-button type="primary" @click="closeAndSave()">Save and Close</el-button>
   </el-dialog>
 </template>
 <script>
@@ -67,6 +68,9 @@ export default {
     },
     handleClose() {
       this.back()
+    },
+    save() {
+      this.$refs.editor.save()
     },
     closeAndSave() {
       this.dialogVisible = false
