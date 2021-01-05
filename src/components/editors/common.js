@@ -39,10 +39,10 @@ function setup(props) {
     }
   }
 
-  console.log('raw is ', item.__v_raw)
-  if (item.__v_raw) {
-    item = item.__v_raw
-  }
+  //console.log('raw is ', item.__v_raw)
+  //if (item.__v_raw) {
+  //  item = item.__v_raw
+  //}
 
   if (item.bodyRef) {
     item.body = ipcRenderer.sendSync('load-body', item.bodyRef)
@@ -66,6 +66,7 @@ function setup(props) {
     }
     // reset updates
     //Object.keys(item.__updates).forEach(k => delete item.__updates[k])
+    item.resetUpdates()
     console.log('updates reset', item.__updates)
   }
 

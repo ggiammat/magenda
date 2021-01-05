@@ -105,12 +105,25 @@ function createEditingProxy(target, externalUpdatesTrackerDict) {
   let updatesTrackerDict = externalUpdatesTrackerDict || {}
   return new Proxy(target, {
     __updates: updatesTrackerDict,
+    __saved: {},
     get(obj, prop) {
       if (prop === "__updates") {
         return this.__updates
       }
       if(Object.prototype.hasOwnProperty.call(this.__updates, prop)) {
         return this.__updates[prop]
+      }
+      if(Object.prototype.hasOwnProperty.call(this.__saved, prop)) {
+        return this.__saved[prop]
+      }
+      if(prop === 'resetUpdates') {
+        return () => {
+          console.log('resetUpdaets executed', this.__updates)
+          Object.keys(this.__updates).forEach(k => {
+            this.__saved[k] = this.__updates[k]
+            delete this.__updates[k]
+          })
+        }
       }
       return Reflect.get(...arguments)
     },
