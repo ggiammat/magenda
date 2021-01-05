@@ -1,5 +1,5 @@
 import { MarkdownItemSource } from './markdown'
-import { MItem, BoardMItem } from '../../common/model/mitem'
+import { MItem, BoardMItem } from '../../common/model/internal'
 
 
 export class BoardsItemSource extends MarkdownItemSource {
