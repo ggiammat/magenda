@@ -44,11 +44,11 @@ function setup(props) {
   //  item = item.__v_raw
   //}
 
+  item = item.getEditingTrackerMItem(props.updatedProps)
+
   if (item.bodyRef) {
     item.body = ipcRenderer.sendSync('load-body', item.bodyRef)
   }
-
-  item = item.getEditingTrackerMItem(props.updatedProps)
 
   item = reactive(item)
 
