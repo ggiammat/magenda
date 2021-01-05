@@ -16,7 +16,7 @@
 
 import WeekWorkspace from '@/components/WeekWorkspace.vue'
 import Board from '@/renderer/components/Board.vue'
-import TimesheetsMonthlyReport from '@/timesheets/MonthlyReport'
+import TimesheetsMonthlyReport from '@/modules/timesheets/MonthlyReport'
 
 export default {
   name: "Home",

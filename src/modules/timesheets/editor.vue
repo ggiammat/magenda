@@ -4,7 +4,7 @@
 </template>
 
 <script>
-import commonEditor from '../components/editors/common'
+import commonEditor from '../../components/editors/common'
 
 export default {
   ...commonEditor,

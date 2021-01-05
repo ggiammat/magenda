@@ -1,4 +1,4 @@
-import { MarkdownItemSource } from '../main/sources/markdown'
+import { MarkdownItemSource } from '../../main/sources/markdown'
 import { DayTimeLoggerMItem } from './model'
 
 

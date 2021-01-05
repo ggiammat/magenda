@@ -1,4 +1,4 @@
-import { BaseMItem } from '../common/model/internal'
+import { BaseMItem } from '../../common/model/internal'
 
 export class DayTimeLoggerMItem extends BaseMItem {
   _serializable = {

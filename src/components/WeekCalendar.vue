@@ -32,7 +32,7 @@
 <script>
 //import draggable from 'vuedraggable'
 import ItemList from '@/components/ItemList'
-import DayTimeLogger from '@/timesheets/CalendarWidget'
+import DayTimeLogger from '@/modules/timesheets/CalendarWidget'
 import { addWeeks, subWeeks, startOfWeek, addDays, format } from 'date-fns'
 
 export default {
