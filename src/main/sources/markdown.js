@@ -42,8 +42,7 @@ export class MarkdownItemSource extends ItemSource {
         other: item.id,
         role: 'encapsulator'
       }]
-      this.saveItem(newItem, updates)
-      return
+      return this.saveItem(newItem, updates)
     }
 
     // no id. It's a new item
@@ -57,6 +56,7 @@ export class MarkdownItemSource extends ItemSource {
       this.writeItemToFile(item)
       const subs = this.createSubItems(item)
       this.sourceManager.store.commit(Mutation.LOAD_ITEMS, [item.serialize(), ...subs.map(s => s.serialize())])
+      return item.id
     } else {
       console.log('MarkdownSource - It\'s an update')
       // It's an update
@@ -85,6 +85,7 @@ export class MarkdownItemSource extends ItemSource {
       if(subs.length > 0) {
         this.sourceManager.store.commit(Mutation.LOAD_ITEMS, subs.map(s => s.serialize()))
       }
+      return updatedItem.id
     }
   }
 

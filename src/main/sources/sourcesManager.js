@@ -2,11 +2,13 @@ import { MarkdownItemSource } from './markdown'
 import { O365ItemSource } from './o365'
 import { LocalFilesItemSource } from './localfiles'
 import { BoardsItemSource } from './boards'
+import { TimesheetsItemSource } from '../../timesheets/source'
 import { ipcMain } from 'electron'
 import log from 'electron-log'
-import * as Mutation from './../../store/mutation-types'
+//import * as Mutation from './../../store/mutation-types'
 import { MItem } from '../../common/model/mitem'
 
+/*
 function deduplicateItems(items, allItems) {
   let duplicatesPairs = []
   items.forEach((i, index) => {
@@ -25,7 +27,7 @@ function deduplicateItems(items, allItems) {
   })
   return { dedupItems: newItems, updatedOrig: updatedOrig }
 }
-
+*/
 
 export class SourcesManager {
   sources = {}
@@ -45,6 +47,8 @@ export class SourcesManager {
         this.sources['localFiles'] = new LocalFilesItemSource('localFiles', conf, this)
       } else if (id === 'boards') {
         this.sources['boards'] = new BoardsItemSource('boards', conf, this)
+      } else if (id === 'timesheets') {
+        this.sources['timesheets'] = new TimesheetsItemSource('timesheets', conf, this)
       }
     })
     this.store = store
@@ -72,10 +76,11 @@ export class SourcesManager {
     ipcMain.on('mag:source:save-item', (event, itemOrId, updates) => {
       console.log('SAVE ITEM RECEIVED', itemOrId, updates)
       let item = typeof itemOrId === 'object' ? MItem.deserialize(itemOrId) : this.store.state.items.find(i => i.id === itemOrId)
-
+      console.log('deserialized item', item)
       let itemSource = item.source || 'default'
 
-      this.sources[itemSource].saveItem(item, updates)
+      const ret = this.sources[itemSource].saveItem(item, updates)
+      event.reply('save-reply', ret)
     })
 
     ipcMain.on('mag:source:delete-item', (event, itemId) => {
