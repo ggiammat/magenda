@@ -3,7 +3,6 @@ import { useStore } from 'vuex'
 import { ipcRenderer } from 'electron'
 import { reactive } from "vue"
 import { saveItem, updateItem, deleteItem } from '@/renderer/ipc'
-
 const editorProps = {
   itemId: {
     type: String,
@@ -40,11 +39,18 @@ function setup(props) {
     }
   }
 
-  item = item.getEditingTrackerMItem(props.updatedProps)
+  console.log('raw is ', item.__v_raw)
+  if (item.__v_raw) {
+    item = item.__v_raw
+  }
 
   if (item.bodyRef) {
     item.body = ipcRenderer.sendSync('load-body', item.bodyRef)
   }
+
+  item = item.getEditingTrackerMItem(props.updatedProps)
+
+  item = reactive(item)
 
   const save = () => {
     let updates = item.__updates
@@ -58,14 +64,20 @@ function setup(props) {
     } else {
       saveItem(item, updates)
     }
+    // reset updates
+    //Object.keys(item.__updates).forEach(k => delete item.__updates[k])
+    console.log('updates reset', item.__updates)
   }
 
   const remove = () => {
     deleteItem(item.id)
   }
 
+
+  console.log('editor initialized with item', item.id)
+
   return {
-    item: reactive(item),
+    item,
     save,
     remove,
     startDate: new Date()
