@@ -6,7 +6,7 @@ import { MarkdownItemSource } from './markdown'
 //import axios from 'axios'
 //import 'isomorphic-fetch'
 import { ipcMain } from 'electron'
-import { MItem } from '../../common/model/mitem'
+import { MItem } from '../../common/model/base'
 import fs from 'fs'
 
 

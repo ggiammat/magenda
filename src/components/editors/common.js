@@ -1,4 +1,4 @@
-import { MItem } from "@/common/model/mitem"
+import { BaseMItem, MItem } from "@/common/model/base"
 import { useStore } from 'vuex'
 import { ipcRenderer } from 'electron'
 import { reactive } from "vue"
@@ -9,7 +9,7 @@ const editorProps = {
     default: undefined
   },
   item: {
-    type: MItem,
+    type: BaseMItem,
     default: undefined
   },
   updatedProps: {

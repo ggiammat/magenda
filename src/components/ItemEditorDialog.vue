@@ -23,7 +23,7 @@
 import TextFileEditor from './editors/TextFile'
 import GenericEditor from './editors/Generic'
 import { mapGetters } from 'vuex'
-import { MItem } from "@/common/model/mitem"
+import { MItem } from "@/common/model/base"
 
 // var reISO = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*))(?:Z|(\+|-)([\d|:]*))?$/
 

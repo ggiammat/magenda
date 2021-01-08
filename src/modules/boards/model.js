@@ -1,8 +1,11 @@
-import { BaseMItem } from '../../common/model/internal'
+import { BodyLessMObject } from '../../common/model/base'
 
-export class BoardMItem extends BaseMItem {
+
+
+export class BoardMItem extends BodyLessMObject {
   _serializable = {
-    ...super.alwaysSerialziable(),
+    ...super._getSerializable(),
+    type: 'board-item',
     x: undefined,
     y: undefined,
     w: undefined,

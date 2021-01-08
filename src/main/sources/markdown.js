@@ -3,7 +3,7 @@ import log from 'electron-log'
 import fs from 'fs'
 import YAML from 'yaml'
 import path from 'path'
-import { MItem, BoardMItem } from '../../common/model/mitem'
+import { MItem } from '../../common/model/base'
 import { v4 as uuidv4 } from 'uuid'
 import * as Mutation from './../../store/mutation-types'
 
@@ -145,20 +145,19 @@ export class MarkdownItemSource extends ItemSource {
     return hash;
   }
 
-  load(query) {
+  load() {
     this.sourceManager.store.commit(Mutation.LOAD_ITEMS, this.loadItems().map(i=>i.serialize()))
   }
 
-  init(query) {
+  init() {
     this.sourceManager.store.commit(Mutation.INIT_STORE, this.loadItems().map(i=>i.serialize()))
   }
 
-  loadItems(query) {
+  loadItems() {
     var items = []
     fs.readdirSync(this.dataPath).forEach(file => {
       if (!file.endsWith('.md')) return
       let item = this._loadItemFromFile(`${this.dataPath}/${file}`)
-      console.log(item)
       items.push(item)
       items = items.concat(this.createSubItems(item))
     })
@@ -199,7 +198,10 @@ export class MarkdownItemSource extends ItemSource {
   }
 
   _loadItemFromFile(file) {
-    return new MItem(this._loadRawItemFromFile(file))
+    return MItem.deserialize({
+      serializable: this._loadRawItemFromFile(file)
+    })
+    //return new MItem(this._loadRawItemFromFile(file))
   }
 
   _loadRawItemFromFile(file) {

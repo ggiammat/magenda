@@ -1,5 +1,5 @@
 import * as Mutation from './mutation-types'
-import { MItem } from '@/common/model/mitem'
+import { MItem } from '@/common/model/base'
 import relTracker from '@/store/relationships'
 import { reactive } from 'vue'
 

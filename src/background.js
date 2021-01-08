@@ -7,6 +7,7 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 import path from 'path'
 import store from "./store";
 import { loadConfiguration, initSources } from './main/init.js'
+import MAgenda from './magenda'
 
 
 const configuration = loadConfiguration()
@@ -74,9 +75,11 @@ if (!gotTheLock) {
         console.error("Vue Devtools failed to install:", e.toString());
       }
     }
-    sourceManager = initSources(configuration, store)
-    createWindow();
-    createTray();
+    MAgenda.initModules().then(() => {
+      sourceManager = initSources(configuration, store)
+      createWindow();
+      createTray();
+    })
   });
 
   // Exit cleanly on request from parent process in development mode.

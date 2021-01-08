@@ -16,7 +16,7 @@
 
 import { remote, ipcRenderer } from 'electron'
 import { mapGetters } from 'vuex'
-import { MItem } from '@/common/model/mitem'
+import { MItem } from '@/common/model/base'
 import { saveItem } from '@/renderer/ipc'
 
 export default {

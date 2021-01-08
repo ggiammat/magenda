@@ -1,6 +1,5 @@
 import { readFileSync } from 'fs'
 import { SourcesManager } from './sources/sourcesManager'
-
 //const CONF_FILE = '/home/gabriele/work-agenda/configuration-test.json'
 const CONF_FILE = '/home/gabriele/work-agenda/configuration.json'
 
@@ -13,5 +12,6 @@ function loadConfiguration() {
 function initSources(configuration, store) {
   return new SourcesManager(configuration.sources, store)
 }
+
 
 export { loadConfiguration, initSources }

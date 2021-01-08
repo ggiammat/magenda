@@ -6,7 +6,7 @@ import log from 'electron-log'
 //import * as qs from 'qs'
 //import axios from 'axios'
 //import 'isomorphic-fetch'
-import { MItem } from '../../common/model/mitem'
+import { MItem } from '../../common/model/base'
 
 
 export class O365ItemSource extends MarkdownItemSource {

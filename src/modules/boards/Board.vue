@@ -32,7 +32,7 @@
 import { useStore } from 'vuex'
 import Vue3DraggableResizable from 'vue3-draggable-resizable'
 import 'vue3-draggable-resizable/dist/Vue3DraggableResizable.css'
-import { MItem } from '@/common/model/mitem'
+import { MItem } from '@/common/model/base'
 import { saveItem, updateItem } from '@/renderer/ipc'
 import { ref } from 'vue'
 import BoardItemEditor from '@/components/editors/BoardItem'
@@ -45,7 +45,7 @@ export default {
   setup() {
     const store = useStore()
 
-    const board = store.getters.allItems.find(i => i.type === 'item-board')
+    const board = store.getters.allItems.find(i => i.type === 'board')
     console.log('BOARD ITEM FOUND', board)
     const items = board.childs.map(i => i.getEditingTrackerMItem())
     const print = (val) => {

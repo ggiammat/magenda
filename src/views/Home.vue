@@ -15,7 +15,7 @@
 // @ is an alias to /src
 
 import WeekWorkspace from '@/components/WeekWorkspace.vue'
-import Board from '@/renderer/components/Board.vue'
+import Board from '@/modules/boards/Board.vue'
 import TimesheetsMonthlyReport from '@/modules/timesheets/MonthlyReport'
 
 export default {

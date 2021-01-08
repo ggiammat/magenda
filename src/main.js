@@ -8,19 +8,24 @@ import { ipcRenderer } from 'electron'
 import mitt from 'mitt'
 import '@/assets/styles/index.css'
 
-const emitter = mitt()
 
-const app = createApp(App)
+import MAgenda from './magenda'
 
-app.use(ElementPlus)
-app.use(router)
-app.use(store)
+MAgenda.initModules().then(() => {
 
-app.config.globalProperties.emitter = emitter
+  const emitter = mitt()
 
+  const app = createApp(App)
 
-app.mount("#app")
+  app.use(ElementPlus)
+  app.use(router)
+  app.use(store)
 
-let res = ipcRenderer.sendSync("mag:source:init-store")
-console.log(res)
-store.commit('INIT_STORE', res.items)
+  app.config.globalProperties.emitter = emitter
+
+  app.mount("#app")
+
+  let res = ipcRenderer.sendSync("mag:source:init-store")
+  console.log(res)
+  store.commit('INIT_STORE', res.items)
+})

@@ -1,21 +1,21 @@
 import { extractBodyProps } from './markdown'
-//import { v4 as uuidv4 } from 'uuid'
-import { DayTimeLoggerMItem, BoardMItem, MItem } from './internal'
 var _ = require('lodash')
 
 const MERGING_PROPS = ['subItems', 'tags']
-const NOT_INHERITABLE_PROPS = ['type', 'id', 'hidden', '_extends', '_encapsulated', 'encapsuler']
-const EXTENDS_NOT_INHERITABLE_PROPS = ['type', 'id', 'hidden', '_extends', '_encapsulated', 'childs', 'encapsuler']
+const NOT_INHERITABLE_PROPS = ['type', 'id', 'hidden', '_extends', '_encapsulated', 'encapsuler', 'body', 'bodyProps', 'bodyRef']
+const EXTENDS_NOT_INHERITABLE_PROPS = ['type', 'id', 'hidden', '_extends', '_encapsulated', 'childs', 'encapsuler', 'body', 'bodyProps', 'bodyRef']
 //const NOT_INHERITABLE_RELS = ['extends', 'encapsulation','parent']
 //const EXTENDS_NOT_INHERITABLE_RELS = ['extends', 'encapsulation', 'parent']
 const mItemProxyGetter = function(obj, prop) {
 
   if (MERGING_PROPS.includes(prop)) {
     var bodyRes
-    if (obj._serializable[`ignoredbody_${prop}`]) {
-      bodyRes = obj._serializable.bodyProps[prop].filter(e => !obj._serializable[`ignoredbody_${prop}`].includes(e))
-    } else {
-      bodyRes = obj._serializable.bodyProps[prop]
+    if (obj instanceof BodyfulMObject) {
+      if (obj._serializable[`ignoredbody_${prop}`]) {
+        bodyRes = obj._serializable.bodyProps[prop].filter(e => !obj._serializable[`ignoredbody_${prop}`].includes(e))
+      } else {
+        bodyRes = obj._serializable.bodyProps[prop]
+      }
     }
     let res = [...bodyRes || [], ...obj._serializable[prop] || [] ]
     return res
@@ -37,7 +37,7 @@ const mItemProxyGetter = function(obj, prop) {
   */
   if (obj[prop] !== undefined) return obj[prop]
   if (obj._serializable[prop] !== undefined) return obj._serializable[prop]
-  if (obj._serializable.bodyProps[prop] !== undefined) return obj._serializable.bodyProps[prop]
+  if (obj._serializable.bodyProps && obj._serializable.bodyProps[prop] !== undefined) return obj._serializable.bodyProps[prop]
   if (obj._encapsulated && !NOT_INHERITABLE_PROPS.includes(prop) && obj._encapsulated[prop] !== undefined) return obj._encapsulated[prop]
   if (obj._extends && !EXTENDS_NOT_INHERITABLE_PROPS.includes(prop) && obj._extends[prop] !== undefined) return obj._extends[prop]
   return undefined
@@ -47,7 +47,7 @@ const mItemProxySetter = function(obj, prop, value) {
 
   //console.log('MItem Proxy Set', prop, value)
   if (MERGING_PROPS.includes(prop)) {
-    if (obj._serializable.bodyProps[prop]) {
+    if (obj._serializable.bodyProps && obj._serializable.bodyProps[prop]) {
       if (prop === "subItems") {
         obj._serializable.bodyProps[prop] = value.filter(e => typeof e === 'string')
       } else {
@@ -84,7 +84,13 @@ const proxyHandler = {
     return this.ownKeys(obj).includes(prop)
   },
   ownKeys: function(obj) {
-    return [... new Set([...Object.keys(obj), ...Object.keys(obj._serializable), ...Object.keys(obj._serializable.bodyProps)])]
+    return [
+      ...new Set([
+        ...Object.keys(obj),
+        ...Object.keys(obj._serializable),
+        ...(obj instanceof BodyfulMObject ? Object.keys(obj._serializable.bodyProps) : [])
+      ])
+    ]
   },
   getOwnPropertyDescriptor: function (obj, prop) {
     //console.log('PROXY PROPDESCR')
@@ -134,29 +140,46 @@ function createEditingProxy(target, externalUpdatesTrackerDict) {
   })
 }
 
-function deserialize(raw) {
-  if (raw.class === 'DayTimeLoggerMItem') {
-    return new DayTimeLoggerMItem(raw.serializable)
-  }
-  if (raw.class === 'BoardMItem') {
-    return new BoardMItem(raw.serializable)
-  }
-  return new MItem(raw.serializable)
+
+const typesLookup = {
+  //'day-time-logger': DayTimeLoggerMItem,
+  //'board-item': BoardMItem
 }
 
 
-export class BaseMItem {
+export function registerMObjectType(type, clazz) {
+  console.log('Registering type', type, clazz)
+  typesLookup[type] = clazz
+}
 
-  alwaysSerialziable(){
-      return {
-      id: undefined,
-      type: undefined,
-      source: undefined,
-      rels: undefined,
-      bodyProps: {}
+function deserialize(raw) {
+  console.log(typesLookup)
+  if (raw.serializable.type){
+    if(Object.prototype.hasOwnProperty.call(typesLookup, raw.serializable.type)) {
+      let x = new typesLookup[raw.serializable.type](raw.serializable)
+      console.log('created item')
+      return x
+    } else {
+      return new MItem(raw.serializable)
     }
+  } else {
+    return new MItem(raw.serializable)
+  }
+}
+
+
+export class BaseMObject {
+
+  _serializable = {
+    id: undefined,
+    type: undefined,
+    source: undefined,
+    rels: undefined
   }
 
+  _getSerializable() {
+    return this._serializable
+  }
 
   init(props) {
     const proxy = new Proxy(this, proxyHandler)
@@ -165,12 +188,10 @@ export class BaseMItem {
   }
 
   static deserialize(props) {
-    console.warn('deprecated: use deserialize() function instead')
     return deserialize(props)
   }
 
   getSerializedProps(){
-    console.warn('Using deprecated getSerializedProps()')
     return this.serialize().serializable
   }
 
@@ -180,8 +201,39 @@ export class BaseMItem {
 
   serialize() {
     return {
-      class: this.constructor.name,
       serializable: _.cloneDeep(this._serializable)
     }
+  }
+}
+
+
+export class BodyLessMObject extends BaseMObject {
+  _serializable = {
+    ...super._getSerializable()
+  }
+}
+
+export class BodyfulMObject extends BaseMObject {
+  _serializable = {
+    ...super._getSerializable(),
+    body: undefined,
+    bodyProps: {},
+    bodyRef: undefined
+  }
+}
+
+export class MItem extends BodyfulMObject {
+  _serializable = {
+    ...super._getSerializable(),
+    title: undefined,
+    done: undefined,
+    start: undefined,
+    sourceId: undefined,
+    deadline: undefined
+  }
+
+  constructor(props = {}) {
+    super()
+    return this.init(props)
   }
 }

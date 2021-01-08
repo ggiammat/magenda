@@ -1,8 +1,9 @@
-import { BaseMItem } from '../../common/model/internal'
+import { BodyLessMObject } from '../../common/model/base'
 
-export class DayTimeLoggerMItem extends BaseMItem {
+export class DayTimeLoggerMItem extends BodyLessMObject {
   _serializable = {
-    ...super.alwaysSerialziable(),
+    ...super._getSerializable(),
+    type: 'day-time-logger',
     ferie: undefined,
     par: undefined,
     date: undefined

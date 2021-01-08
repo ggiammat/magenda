@@ -1,12 +1,12 @@
 import { MarkdownItemSource } from './markdown'
 import { O365ItemSource } from './o365'
 import { LocalFilesItemSource } from './localfiles'
-import { BoardsItemSource } from './boards'
+import { BoardsItemSource } from '../../modules/boards/source'
 import { TimesheetsItemSource } from '../../modules/timesheets/source'
 import { ipcMain } from 'electron'
 import log from 'electron-log'
 //import * as Mutation from './../../store/mutation-types'
-import { MItem } from '../../common/model/mitem'
+import { MItem } from '../../common/model/base'
 
 /*
 function deduplicateItems(items, allItems) {

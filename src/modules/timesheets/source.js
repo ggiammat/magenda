@@ -1,5 +1,5 @@
 import { MarkdownItemSource } from '../../main/sources/markdown'
-import { DayTimeLoggerMItem } from './model'
+//import { DayTimeLoggerMItem } from './model'
 
 
 export class TimesheetsItemSource extends MarkdownItemSource {
@@ -10,6 +10,8 @@ export class TimesheetsItemSource extends MarkdownItemSource {
     super(name, configuration, sourceManager)
   }
 
+/*
+
   _loadItemFromFile(file) {
     let raw = this._loadRawItemFromFile(file)
     if (raw.type === 'day-time-logger') {
@@ -17,4 +19,6 @@ export class TimesheetsItemSource extends MarkdownItemSource {
     }
     console.error('Unknown type', raw)
   }
+
+*/
 }

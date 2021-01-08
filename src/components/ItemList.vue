@@ -35,7 +35,7 @@
 import draggable from 'vuedraggable'
 import { mapGetters } from 'vuex'
 import Item from '@/components/Item'
-import { MItem } from '@/common/model/mitem'
+import { MItem } from '@/common/model/base'
 import { saveItem, updateItem } from '@/renderer/ipc'
 export default {
   components: {
