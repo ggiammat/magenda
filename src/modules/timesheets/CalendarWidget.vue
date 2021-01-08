@@ -19,7 +19,7 @@ export default {
     item() {
       let item = this.allItems.filter(i => i instanceof DayTimeLoggerMItem).find(i => isSameDay(this.day, i.date))
       if (!item) {
-        item = new DayTimeLoggerMItem({date: this.day, source: 'timesheets'})
+        item = new DayTimeLoggerMItem({date: this.day})
       }
       return item
     }

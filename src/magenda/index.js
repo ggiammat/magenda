@@ -13,6 +13,8 @@ const types = {}
 
 const sources = {}
 
+const defaultSources = {}
+
 function registerType(type, clazz) {
   types[type] = clazz
 }
@@ -22,13 +24,17 @@ function registerSource(id, clazz) {
   sources[id] = clazz
 }
 
+function registerDefaultSource(type, sourceId) {
+  defaultSources[type] = sourceId
+}
+
 async function initModules() {
   var m
   for(m of active_modules) {
     let module = await import(`../modules/${m}`)
     //modules[m] = module
-    module.register(registerType, registerSource)
+    module.register(registerType, registerSource, registerDefaultSource)
   }
 }
 
-export default { initModules, /* modules,*/ sources, types }
+export default { initModules, /* modules,*/ sources, types, defaultSources }

@@ -81,7 +81,16 @@ export class SourcesManager {
       console.log('SAVE ITEM RECEIVED', itemOrId, updates)
       let item = typeof itemOrId === 'object' ? MItem.deserialize(itemOrId) : this.store.state.items.find(i => i.id === itemOrId)
       console.log('deserialized item', item)
-      let itemSource = item.source || 'default'
+
+      let itemSource = item.source
+      if (!itemSource) {
+        console.log('Received item without source. Applying the defualtSource', MAgenda.defaultSources)
+        itemSource = MAgenda.defaultSources[item.type]
+      }
+      if (!itemSource) {
+        console.log('Setting item source to default')
+        itemSource = 'default'
+      }
 
       const ret = this.sources[itemSource].saveItem(item, updates)
       event.reply('save-reply', ret)
