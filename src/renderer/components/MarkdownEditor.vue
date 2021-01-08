@@ -107,5 +107,5 @@ export default {
 }
 </script>
 <style scoped>
-@import '../muya/themes/default-scoped.css'
+@import '../../muya/themes/default-scoped.css'
 </style>

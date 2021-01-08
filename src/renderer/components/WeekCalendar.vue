@@ -31,7 +31,7 @@
 </template>
 <script>
 //import draggable from 'vuedraggable'
-import ItemList from '@/components/ItemList'
+import ItemList from './ItemList'
 import DayTimeLogger from '@/modules/timesheets/CalendarWidget'
 import { addWeeks, subWeeks, startOfWeek, addDays, format } from 'date-fns'
 
@@ -40,6 +40,11 @@ export default {
     //draggable,
     ItemList,
     DayTimeLogger
+    /*
+    DayTimeLogger: defineAsyncComponent({
+      loader: () => new Promise((res) => res(MAgenda.modules['timesheets'].CalendarWidget))
+    })
+    */
   },
   data(){
     return {

@@ -1,5 +1,6 @@
 import { extractBodyProps } from './markdown'
 var _ = require('lodash')
+import MAgenda from '../../magenda'
 
 const MERGING_PROPS = ['subItems', 'tags']
 const NOT_INHERITABLE_PROPS = ['type', 'id', 'hidden', '_extends', '_encapsulated', 'encapsuler', 'body', 'bodyProps', 'bodyRef']
@@ -140,24 +141,10 @@ function createEditingProxy(target, externalUpdatesTrackerDict) {
   })
 }
 
-
-const typesLookup = {
-  //'day-time-logger': DayTimeLoggerMItem,
-  //'board-item': BoardMItem
-}
-
-
-export function registerMObjectType(type, clazz) {
-  console.log('Registering type', type, clazz)
-  typesLookup[type] = clazz
-}
-
 function deserialize(raw) {
-  console.log(typesLookup)
   if (raw.serializable.type){
-    if(Object.prototype.hasOwnProperty.call(typesLookup, raw.serializable.type)) {
-      let x = new typesLookup[raw.serializable.type](raw.serializable)
-      console.log('created item')
+    if(Object.prototype.hasOwnProperty.call(MAgenda.types, raw.serializable.type)) {
+      let x = new MAgenda.types[raw.serializable.type](raw.serializable)
       return x
     } else {
       return new MItem(raw.serializable)

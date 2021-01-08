@@ -1,4 +1,4 @@
-import { BaseMItem, MItem } from "@/common/model/base"
+import { BaseMItem, MItem } from "@/magenda/model/base"
 import { useStore } from 'vuex'
 import { ipcRenderer } from 'electron'
 import { reactive } from "vue"

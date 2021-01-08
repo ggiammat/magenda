@@ -6,13 +6,11 @@ import { MarkdownItemSource } from './markdown'
 //import axios from 'axios'
 //import 'isomorphic-fetch'
 import { ipcMain } from 'electron'
-import { MItem } from '../../common/model/base'
+import { MItem } from '../../../magenda/model/base'
 import fs from 'fs'
 
 
 export class LocalFilesItemSource extends MarkdownItemSource {
-
-  source = 'localFiles'
 
   mappedFiles = {}
 

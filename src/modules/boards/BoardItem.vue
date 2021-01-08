@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import commonEditor from './common'
-import MarkdownEditor from '@/components/MarkdownEditor.vue'
+import commonEditor from '@/renderer/components/editors/common'
+import MarkdownEditor from '@/renderer/components/MarkdownEditor.vue'
 
 export default {
   components: {

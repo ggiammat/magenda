@@ -14,7 +14,7 @@
   </div>
 </template>
 <script>
-import { MItem } from '@/common/model/base'
+import { MItem } from '@/magenda/model/base'
 import { format } from 'date-fns'
 export default {
   name: 'Item',

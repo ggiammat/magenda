@@ -19,7 +19,7 @@
 
 <script>
 import commonEditor from './common'
-import MarkdownEditor from '@/components/MarkdownEditor.vue'
+import MarkdownEditor from '../MarkdownEditor.vue'
 
 export default {
   components: {

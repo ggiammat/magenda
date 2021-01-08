@@ -11,11 +11,11 @@
     </el-row>
 </template>
 <script>
-import ItemEditorDialog from '@/components/ItemEditorDialog'
-import ItemList from "@/components/ItemList"
-import WeekCalendar from "@/components/WeekCalendar"
+import ItemEditorDialog from './ItemEditorDialog'
+import ItemList from "./ItemList"
+import WeekCalendar from "./WeekCalendar"
 import { endOfWeek, startOfWeek, addWeeks, addDays } from 'date-fns'
-import { MItem } from '@/common/model/base'
+import { MItem } from '@/magenda/model/base'
 export default {
   components: {
     ItemEditorDialog,

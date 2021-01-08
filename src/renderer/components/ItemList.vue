@@ -34,8 +34,8 @@
 <script>
 import draggable from 'vuedraggable'
 import { mapGetters } from 'vuex'
-import Item from '@/components/Item'
-import { MItem } from '@/common/model/base'
+import Item from './Item'
+import { MItem } from '@/magenda/model/base'
 import { saveItem, updateItem } from '@/renderer/ipc'
 export default {
   components: {

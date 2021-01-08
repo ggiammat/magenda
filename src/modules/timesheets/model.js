@@ -1,4 +1,4 @@
-import { BodyLessMObject } from '../../common/model/base'
+import { BodyLessMObject } from '../../magenda/model/base'
 
 export class DayTimeLoggerMItem extends BodyLessMObject {
   _serializable = {

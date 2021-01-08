@@ -1,12 +1,8 @@
-import { MarkdownItemSource } from './markdown'
-import { O365ItemSource } from './o365'
-import { LocalFilesItemSource } from './localfiles'
-import { BoardsItemSource } from '../../modules/boards/source'
-import { TimesheetsItemSource } from '../../modules/timesheets/source'
 import { ipcMain } from 'electron'
 import log from 'electron-log'
 //import * as Mutation from './../../store/mutation-types'
-import { MItem } from '../../common/model/base'
+import { MItem } from '../model/base'
+import MAgenda from '../../magenda'
 
 /*
 function deduplicateItems(items, allItems) {
@@ -35,6 +31,12 @@ export class SourcesManager {
 
   constructor(configuration, store) {
     log.info('Initializate SourcesManager with conf ', configuration)
+
+    Object.keys(MAgenda.sources).forEach(s => {
+      console.log('instantiating item source', s)
+      this.sources[s] = new MAgenda.sources[s](s, configuration[s], this)
+    })
+    /*
     Object.entries(configuration).forEach(e => {
       let id = e[0]
       let conf = e[1]
@@ -51,6 +53,8 @@ export class SourcesManager {
         this.sources['timesheets'] = new TimesheetsItemSource('timesheets', conf, this)
       }
     })
+
+    */
     this.store = store
 
     /*

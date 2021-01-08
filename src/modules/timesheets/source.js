@@ -1,10 +1,8 @@
-import { MarkdownItemSource } from '../../main/sources/markdown'
+import { MarkdownItemSource } from '../core/sources/markdown'
 //import { DayTimeLoggerMItem } from './model'
 
 
 export class TimesheetsItemSource extends MarkdownItemSource {
-
-  source = 'timesheets'
 
   constructor(name, configuration, sourceManager) {
     super(name, configuration, sourceManager)

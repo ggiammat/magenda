@@ -10,6 +10,9 @@ import { loadConfiguration, initSources } from './main/init.js'
 import MAgenda from './magenda'
 
 
+
+
+
 const configuration = loadConfiguration()
 
 let tray = null

@@ -32,10 +32,10 @@
 import { useStore } from 'vuex'
 import Vue3DraggableResizable from 'vue3-draggable-resizable'
 import 'vue3-draggable-resizable/dist/Vue3DraggableResizable.css'
-import { MItem } from '@/common/model/base'
+import { MItem } from '@/magenda/model/base'
 import { saveItem, updateItem } from '@/renderer/ipc'
 import { ref } from 'vue'
-import BoardItemEditor from '@/components/editors/BoardItem'
+import BoardItemEditor from './BoardItem'
 
 export default {
   components: {

@@ -1,9 +1,7 @@
-import { MarkdownItemSource } from '../../main/sources/markdown'
+import { MarkdownItemSource } from '../core/sources/markdown'
 
 
 export class BoardsItemSource extends MarkdownItemSource {
-
-  source = 'boards'
 
   constructor(name, configuration, sourceManager) {
     super(name, configuration, sourceManager)

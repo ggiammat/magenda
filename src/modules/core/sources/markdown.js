@@ -1,17 +1,15 @@
-import { ItemSource } from './index'
+import { ItemSource } from '../../../magenda/sources'
 import log from 'electron-log'
 import fs from 'fs'
 import YAML from 'yaml'
 import path from 'path'
-import { MItem } from '../../common/model/base'
+import { MItem } from '../../../magenda/model/base'
 import { v4 as uuidv4 } from 'uuid'
-import * as Mutation from './../../store/mutation-types'
+import * as Mutation from '../../../store/mutation-types'
 
 const regex = /^---([\s\S]*)---\n\n([\s\S]*)$/
 
 export class MarkdownItemSource extends ItemSource {
-
-  source = 'default'
 
   constructor(name, configuration, sourceManager) {
     super(name, configuration, sourceManager)
@@ -49,7 +47,7 @@ export class MarkdownItemSource extends ItemSource {
     if (!item.id) {
       console.log('MarkdownSource - It\'s a new item')
       item.id = uuidv4()
-      item.source = this.source
+      item.source = this.name
       if (updates) {
         Object.keys(updates).forEach(k => item[k] = updates[k])
       }
@@ -178,7 +176,7 @@ export class MarkdownItemSource extends ItemSource {
           let subItem = new MItem(si)
           subItem.id = `${item.id}:${this.hashCode(si.title)}`
           subItem.type = 'virtual-subitem'
-          subItem.source = this.source
+          subItem.source = this.name
           subItem.rels = [{
               other: item.id,
               role: "child",
@@ -213,7 +211,7 @@ export class MarkdownItemSource extends ItemSource {
           id: path.basename(file, '.md'),
           body: m[2] || undefined,
           ...YAML.parseDocument(m[1], { customTags: ['timestamp'] }).toJS(),
-          source: this.source
+          source: this.name
         }
         return item
       } catch (err) {

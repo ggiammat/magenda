@@ -1,17 +1,8 @@
-import { MarkdownItemSource } from './markdown'
-import log from 'electron-log'
-//import { MSALAuthenticationProviderOptions } from '@microsoft/microsoft-graph-client/lib/src/MSALAuthenticationProviderOptions';
-//import { Client } from "@microsoft/microsoft-graph-client"
-//import { UserAgentApplication } from "msal"
-//import * as qs from 'qs'
-//import axios from 'axios'
-//import 'isomorphic-fetch'
-import { MItem } from '../../common/model/base'
+import { MarkdownItemSource } from '../core/sources/markdown'
+import { MItem } from '../../magenda/model/base'
 
 
 export class O365ItemSource extends MarkdownItemSource {
-
-  source = 'o365'
 
   constructor(name, configuration, sourceManager) {
     super(name, configuration, sourceManager)
@@ -35,7 +26,6 @@ export class O365ItemSource extends MarkdownItemSource {
 
 
   loadItems(query) {
-    log.info('LOADING O365 ITEMS')
     const fs = require('fs')
     const content = fs.readFileSync(this.configuration.file, 'utf-8')
     const rawItems = JSON.parse(content)
@@ -50,7 +40,7 @@ export class O365ItemSource extends MarkdownItemSource {
         end: new Date(ri.end.dateTime),
         allDay: ri.isAllDay,
         sourceId: ri.objectId,
-        source: "o365",
+        source: this.name,
         type: 'virtual-event'
       }))
     })
