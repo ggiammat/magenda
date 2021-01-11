@@ -16,7 +16,7 @@
 
 import { remote, ipcRenderer } from 'electron'
 import { mapGetters } from 'vuex'
-import { MItem } from '@/magenda/model/base'
+import { MItem } from '@/magenda/core'
 import { saveItem } from '@/renderer/ipc'
 
 export default {

@@ -11,7 +11,7 @@ import '@/assets/styles/index.css'
 
 import MAgenda from './magenda'
 
-MAgenda.initModules().then(() => {
+MAgenda.initModules(true).then(() => {
 
   console.log('modules', MAgenda.modules)
 

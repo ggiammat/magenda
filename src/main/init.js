@@ -1,5 +1,5 @@
 import { readFileSync } from 'fs'
-import { SourcesManager } from '../magenda/sources/sourcesManager'
+import { SourcesManager } from '@/magenda/core'
 //const CONF_FILE = '/home/gabriele/work-agenda/configuration-test.json'
 const CONF_FILE = '/home/gabriele/work-agenda/configuration.json'
 

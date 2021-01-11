@@ -12,7 +12,6 @@ import MAgenda from './magenda'
 
 
 
-
 const configuration = loadConfiguration()
 
 let tray = null
@@ -33,6 +32,7 @@ if (!gotTheLock) {
     if (!filename.startsWith('/')) {
       filename = workingDirectory + '/' + filename
     }
+    console.log('Sources', Object.keys(sourceManager.sources))
     let itemId = sourceManager.sources['localFiles'].openFile(filename)
     showEditor(itemId)
   })

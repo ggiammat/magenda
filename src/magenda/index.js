@@ -1,13 +1,16 @@
 
 const active_modules = [
   'core',
+  'mitems',
+  'textEditor',
   'o365',
   'boards',
-  'timesheets'
+  'timesheets',
+  'WeekWorkspace'
 ]
 
 // currently unused
-//const modules = {}
+const vueModules = {}
 
 const types = {}
 
@@ -28,13 +31,21 @@ function registerDefaultSource(type, sourceId) {
   defaultSources[type] = sourceId
 }
 
-async function initModules() {
+async function initModules(loadVue = false) {
+  console.log('importing modules', loadVue)
   var m
   for(m of active_modules) {
-    let module = await import(`../modules/${m}`)
-    //modules[m] = module
+    let module = await import(`./${m}`)
+    if (loadVue) {
+      try {
+        let vueName = m + '/vue'
+        vueModules[m] = await import('./' + vueName)
+      } catch {
+        console.log('error loading module\'s vue components ', m)
+      }
+    }
     module.register(registerType, registerSource, registerDefaultSource)
   }
 }
 
-export default { initModules, /* modules,*/ sources, types, defaultSources }
+export default { initModules, vueModules, sources, types, defaultSources }

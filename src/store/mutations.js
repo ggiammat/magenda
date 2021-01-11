@@ -1,6 +1,6 @@
 import * as Mutation from './mutation-types'
-import { MItem } from '@/magenda/model/base'
-import relTracker from '@/store/relationships'
+import { MItem } from '@/magenda/core'
+import relTracker from '@/magenda/core/relationships'
 import { reactive } from 'vue'
 
 

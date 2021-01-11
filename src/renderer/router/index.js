@@ -1,5 +1,4 @@
 import { createRouter, createWebHashHistory } from "vue-router"
-import Home from "../views/Home.vue"
 import Finder from "../views/Finder.vue"
 import Item from "../views/Item.vue"
 
@@ -7,7 +6,7 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: Home
+    component: () => import('../views/Home.vue')
   },
   {
     path: "/finder",

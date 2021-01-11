@@ -5,7 +5,7 @@
 <script>
 // @ is an alias to /src
 
-import ItemEditor from '../components/ItemEditor.vue'
+import {TextEditor as ItemEditor} from '@/magenda/textEditor/vue'
 
 export default {
   name: "Home",
