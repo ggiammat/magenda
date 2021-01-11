@@ -3,7 +3,7 @@ var _ = require('lodash')
 import MAgenda from '../..'
 
 const MERGING_PROPS = ['subItems', 'tags']
-const NOT_INHERITABLE_PROPS = ['type', 'id', 'hidden', '_extends', '_encapsulated', 'encapsuler', 'body', 'bodyProps', 'bodyRef']
+const NOT_INHERITABLE_PROPS = ['type', 'id', 'hidden', '_extends', '_encapsulated', 'encapsuler']
 const EXTENDS_NOT_INHERITABLE_PROPS = ['type', 'id', 'hidden', '_extends', '_encapsulated', 'childs', 'encapsuler', 'body', 'bodyProps', 'bodyRef']
 //const NOT_INHERITABLE_RELS = ['extends', 'encapsulation','parent']
 //const EXTENDS_NOT_INHERITABLE_RELS = ['extends', 'encapsulation', 'parent']
